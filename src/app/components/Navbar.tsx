@@ -209,6 +209,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 
 interface NavbarProps {
   refs: {
@@ -244,9 +245,16 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
     >
       <div className="flex justify-between items-center max-w-7xl mx-auto px-10 py-5 relative">
         {/* Logo */}
-        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-[#00E676] to-[#00C9FF] bg-clip-text text-transparent select-none">
-          LinQ
-        </h1>
+        <div className="flex items-center">
+          <Image
+            src="/logo.png"
+            alt="LinQ Logo"
+            width={120}
+            height={40}
+            className="select-none"
+            priority
+          />
+        </div>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-14 ml-10 text-[#7a7b7c] font-medium">
