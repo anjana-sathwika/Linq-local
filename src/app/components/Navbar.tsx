@@ -239,7 +239,7 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${
         scrolled
-          ? "max-w-[92%] left-[4%] bg-gradient-to-r from-[#0f2027]/95 via-[#203a43]/95 to-[#2c5364]/95 shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl rounded-[2.5rem] mt-4 translate-y-3 border border-[#00E676]/20"
+          ? "max-w-[92%] left-[4%] bg-white shadow-[0_10px_30px_rgba(0,0,0,0.1)] backdrop-blur-xl rounded-[2.5rem] mt-4 translate-y-3 border border-gray-200"
           : "bg-transparent max-w-full left-0 mt-0 translate-y-0"
       }`}
     >
@@ -257,7 +257,9 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         </div>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex gap-14 ml-10 text-[#7a7b7c] font-medium">
+        <ul className={`hidden md:flex gap-14 ml-10 font-medium transition-colors ${
+          scrolled ? "text-gray-700" : "text-[#7a7b7c]"
+        }`}>
           <li
             className="hover:text-[#00E676] transition cursor-pointer"
             onClick={() => scrollToSection(refs.home)}
@@ -313,12 +315,14 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
           menuOpen ? "max-h-64 opacity-100 py-4" : "max-h-0 opacity-0 py-0"
         } mx-8 mb-4 ${
           scrolled
-            ? "bg-transparent border-none shadow-none rounded-none"
+            ? "bg-white border border-gray-200 shadow-[0_10px_25px_rgba(0,0,0,0.1)] rounded-2xl"
             : "bg-gradient-to-r from-[#0f2027]/95 via-[#203a43]/95 to-[#2c5364]/95 border border-[#00E676]/20 shadow-[0_10px_25px_rgba(0,0,0,0.5)] rounded-2xl"
         }`}
         style={{ transformOrigin: "top center" }}
       >
-        <ul className="flex flex-col items-center gap-4 text-[#d0d0d0] font-medium">
+        <ul className={`flex flex-col items-center gap-4 font-medium transition-colors ${
+          scrolled ? "text-gray-700" : "text-[#d0d0d0]"
+        }`}>
           <li
             className="hover:text-[#00E676] transition cursor-pointer"
             onClick={() => scrollToSection(refs.home)}
