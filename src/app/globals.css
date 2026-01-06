@@ -1,6 +1,13 @@
-@import "tailwindcss";
+/* ======================================================
+   TAILWIND DIRECTIVES (REQUIRED – DO NOT REMOVE)
+====================================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Google Fonts */
+/* ======================================================
+   GOOGLE FONT
+====================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* ======================================================
@@ -17,12 +24,9 @@
   /* App tokens */
   --background: var(--brand-bg);
   --foreground: var(--brand-text);
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
 }
 
-/* Dark mode (optional – safe & subtle) */
+/* Dark mode (safe, optional) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0B1220;
@@ -60,7 +64,7 @@ input[type="submit"],
 }
 
 /* ======================================================
-   INSTAGRAM-STYLE LOGO / CTA ANIMATION
+   INSTAGRAM-STYLE FLIP ANIMATION
 ====================================================== */
 @keyframes insta-flip-dance {
   0% { transform: rotateY(0deg) scale(1); }
@@ -83,7 +87,7 @@ input[type="submit"],
 }
 
 /* ======================================================
-   CARD ENTRANCE + HOVER (PREMIUM FEEL)
+   CARD ENTRANCE + HOVER EFFECTS
 ====================================================== */
 @keyframes cardPop {
   0% { opacity: 0; transform: translateY(10px) scale(0.995); }
@@ -109,13 +113,12 @@ input[type="submit"],
   animation-delay: var(--delay, 0ms);
 }
 
-/* Press feedback */
 .card-appeal:active {
   transform: translateY(-2px) scale(0.992) !important;
 }
 
 /* ======================================================
-   GRADIENT GLOW BORDER (LOGO ALIGNED)
+   GRADIENT GLOW BORDER (LINQ BLUE)
 ====================================================== */
 .glow-border {
   position: relative;
@@ -155,7 +158,7 @@ input[type="submit"],
 }
 
 /* ======================================================
-   GLOSSY OVERLAY + SHIMMER (SUBTLE)
+   GLOSSY OVERLAY + SHIMMER
 ====================================================== */
 .glossy-overlay {
   position: absolute;
@@ -181,7 +184,6 @@ input[type="submit"],
   transform: scale(1.02);
 }
 
-/* Shimmer sweep */
 .glossy-overlay::after {
   content: "";
   position: absolute;
@@ -194,7 +196,6 @@ input[type="submit"],
     rgba(255,255,255,0) 100%
   );
   transform: translateX(-120%);
-  mix-blend-mode: screen;
 }
 
 @keyframes shine {
@@ -207,7 +208,7 @@ input[type="submit"],
 }
 
 /* ======================================================
-   TILT EFFECT (3D SAFE)
+   3D TILT SUPPORT
 ====================================================== */
 .tilt {
   transform-style: preserve-3d;
@@ -221,7 +222,7 @@ input[type="submit"],
 }
 
 /* ======================================================
-   DECORATIVE PARALLAX ACCENTS (MAP INSPIRED)
+   DECORATIVE PARALLAX ACCENTS
 ====================================================== */
 .parallax-accent {
   position: absolute;
