@@ -2,7 +2,7 @@ import { FaWhatsapp, FaLinkedin, FaInstagram, FaTwitter } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="text-center py-12 bg-[#0F2027] text-gray-400 text-sm border-t border-gray-700 mt-16">
+    <footer className="text-center py-12 bg-white text-gray-600 text-sm border-t border-gray-200 mt-16">
       <div className="flex justify-center gap-6 mb-4">
         <a
           href="https://whatsapp.com/channel/0029VbAqx8E4SpkCdVRxhf2E"

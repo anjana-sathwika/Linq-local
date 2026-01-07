@@ -243,43 +243,43 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
           : "bg-transparent max-w-full left-0 mt-0 translate-y-0"
       }`}
     >
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-10 py-5 relative">
+      <div className="flex justify-between items-center max-w-7xl mx-auto px-10 py-3 relative">
         {/* Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center h-10">
           <Image
             src="/logo.png"
             alt="LinQ Logo"
-            width={120}
-            height={40}
-            className="select-none"
+            width={0}
+            height={32}
+            className="h-8 w-auto object-contain select-none"
             priority
           />
         </div>
 
         {/* Desktop Menu */}
         <ul className={`hidden md:flex gap-14 ml-10 font-medium transition-colors ${
-          scrolled ? "text-gray-700" : "text-[#7a7b7c]"
+          scrolled ? "text-gray-700" : "text-gray-600"
         }`}>
           <li
-            className="hover:text-[#00E676] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.home)}
           >
             Home
           </li>
           <li
-            className="hover:text-[#00C9FF] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.features)}
           >
             Features
           </li>
           <li
-            className="hover:text-[#00E676] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.content)}
           >
             About
           </li>
           <li
-            className="hover:text-[#00C9FF] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.footer)}
           >
             Careers
@@ -289,7 +289,7 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         {/* Desktop Button */}
         <button
           onClick={() => scrollToSection(refs.features)}
-          className="hidden md:block bg-gradient-to-r from-[#00E676] to-[#00C9FF] text-black font-semibold px-6 py-2 rounded-full hover:shadow-[0_0_20px_#00E676] transition"
+          className="hidden md:block bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition"
         >
           JOIN FOR FREE
         </button>
@@ -298,12 +298,12 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         <div className="md:hidden absolute right-8">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 bg-gradient-to-r from-[#00E676]/20 to-[#00C9FF]/20 rounded-full border border-[#00E676]/30 shadow-lg transition hover:scale-105"
+            className="p-2 bg-[#5FA9FF]/20 rounded-full border border-[#2F5EEA]/30 shadow-lg transition hover:bg-[#5FA9FF]/30"
           >
             {menuOpen ? (
-              <X className="text-[#00E676] w-6 h-6" />
+              <X className="text-[#2F5EEA] w-6 h-6" />
             ) : (
-              <Menu className="text-[#00E676] w-6 h-6" />
+              <Menu className="text-[#2F5EEA] w-6 h-6" />
             )}
           </button>
         </div>
@@ -316,33 +316,33 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         } mx-8 mb-4 ${
           scrolled
             ? "bg-white border border-gray-200 shadow-[0_10px_25px_rgba(0,0,0,0.1)] rounded-2xl"
-            : "bg-gradient-to-r from-[#0f2027]/95 via-[#203a43]/95 to-[#2c5364]/95 border border-[#00E676]/20 shadow-[0_10px_25px_rgba(0,0,0,0.5)] rounded-2xl"
+            : "bg-white border border-gray-200 shadow-[0_10px_25px_rgba(0,0,0,0.1)] rounded-2xl"
         }`}
         style={{ transformOrigin: "top center" }}
       >
         <ul className={`flex flex-col items-center gap-4 font-medium transition-colors ${
-          scrolled ? "text-gray-700" : "text-[#d0d0d0]"
+          scrolled ? "text-gray-700" : "text-gray-600"
         }`}>
           <li
-            className="hover:text-[#00E676] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.home)}
           >
             Home
           </li>
           <li
-            className="hover:text-[#00C9FF] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.features)}
           >
             Features
           </li>
           <li
-            className="hover:text-[#00E676] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.content)}
           >
             About
           </li>
           <li
-            className="hover:text-[#00C9FF] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.footer)}
           >
             Careers
