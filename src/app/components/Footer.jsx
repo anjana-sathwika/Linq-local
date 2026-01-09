@@ -1,55 +1,78 @@
-import { FaWhatsapp, FaInstagram } from "react-icons/fa";
+import { FaWhatsapp, FaInstagram, FaPhoneAlt } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur border-t border-gray-200 py-3 px-4 md:px-8 text-xs sm:text-sm text-gray-600 z-40">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-        {/* Social icons */}
-        <div className="flex items-center gap-4">
+    <footer className="fixed bottom-0 left-0 w-full bg-[#2f54b3] text-white z-50 shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="flex items-center justify-between gap-2 text-xs sm:text-sm">
+
+          {/* Phone */}
           <a
-            href="https://whatsapp.com/channel/0029VbAqx8E4SpkCdVRxhf2E"
+            href="tel:+919494823941"
+            className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 hover:text-white/80 transition"
+            aria-label="Call LinQ"
+          >
+            <FaPhoneAlt className="text-lg sm:text-base" />
+            <span className="font-medium">+91 9494823941</span>
+          </a>
+
+          <Divider />
+
+          {/* Instagram */}
+          <a
+            href="https://www.instagram.com/gotogetherrides"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-green-600 hover:text-green-700 transition"
+            className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 hover:text-white/80 transition"
+            aria-label="Instagram"
+          >
+            <FaInstagram className="text-lg" />
+            <span className="hidden sm:inline">Instagram</span>
+          </a>
+
+          <Divider />
+
+          {/* WhatsApp */}
+          <a
+            href="https://wa.me/919494823941"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 hover:text-white/80 transition"
             aria-label="WhatsApp"
           >
             <FaWhatsapp className="text-lg" />
             <span className="hidden sm:inline">WhatsApp</span>
           </a>
 
-          <a
-            href="https://www.instagram.com/gotogetherrides?igsh=azg0aGp3YnAzZTYy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-pink-500 hover:text-pink-600 transition"
-            aria-label="Instagram"
-          >
-            <FaInstagram className="text-lg" />
-            <span className="hidden sm:inline">Instagram</span>
-          </a>
-        </div>
+          <Divider />
 
-        {/* Quick links */}
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          {/* Join Now */}
           <a
-            href="https://forms.gle/EK6ScmSd65bBH2X5A"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-[#2F5EEA] hover:text-[#1E3FAE] transition"
+            href="#join"
+            className="font-semibold px-3 py-1 rounded-md bg-white text-[#2f54b3] hover:bg-white/90 transition"
           >
-            Join for free
+            Join Now
           </a>
-          <span className="hidden sm:inline text-gray-300">|</span>
+
+          <Divider />
+
+          {/* Sankranti Form */}
           <a
             href="https://forms.gle/FGmHDfHM8sW3bPVW8"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-[#D97706] hover:text-[#B45309] transition"
+            className="font-medium hover:text-white/80 transition"
           >
-            Sankranti travel form
+            Sankranti Form
           </a>
+
         </div>
       </div>
     </footer>
   );
+}
+
+/* Divider Component */
+function Divider() {
+  return <span className="hidden sm:inline h-5 w-px bg-white/30" />;
 }
