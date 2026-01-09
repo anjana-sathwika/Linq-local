@@ -202,12 +202,12 @@ export default function Content() {
 
             <div className="flex flex-wrap gap-4 mb-6">
               <div className="px-4 py-2 bg-white rounded-full border border-gray-100 shadow-sm">
-                <strong className="block text-sm text-gray-800">30K+</strong>
+                <strong className="block text-sm text-gray-800">34K+</strong>
                 <span className="text-xs text-gray-500">followers</span>
               </div>
 
               <div className="px-4 py-2 bg-white rounded-full border border-gray-100 shadow-sm">
-                <strong className="block text-sm text-gray-800">5K</strong>
+                <strong className="block text-sm text-gray-800">8K</strong>
                 <span className="text-xs text-gray-500">daily users</span>
               </div>
 
@@ -244,11 +244,32 @@ export default function Content() {
               </div>
             </div>
 
-            <div className="mt-8">
-                <Link href="https://forms.gle/EK6ScmSd65bBH2X5A" passHref>
-              <button className="inline-flex items-center gap-3 bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-[#1E3FAE] transition">
-                JOIN FOR FREE
-              </button></Link>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center">
+              <Link href="https://forms.gle/EK6ScmSd65bBH2X5A" passHref>
+                <button className="inline-flex items-center gap-3 bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-[#1E3FAE] transition">
+                  JOIN FOR FREE
+                </button>
+              </Link>
+
+              {/* Sankranti villages form */}
+              <Link href="https://forms.gle/FGmHDfHM8sW3bPVW8">
+                <button
+                  className="
+                    relative overflow-hidden
+                    bg-gradient-to-r from-[#FFB703] via-[#FFD166] to-[#FF9F1C]
+                    text-[#4A2C00] font-bold
+                    px-6 py-3
+                    rounded-full
+                    shadow-[0_0_20px_rgba(255,183,3,0.45)]
+                    hover:shadow-[0_0_28px_rgba(255,183,3,0.7)]
+                    transition-all duration-300
+                    hover:scale-[1.04] text-sm
+                  "
+                >
+                  🪁🌾Sankranti Travel Form<span className="ml-1">🚙🏍️</span>
+                  <span className="pointer-events-none absolute inset-0 bg-white/20 animate-shine" />
+                </button>
+              </Link>
             </div>
           </div>
 

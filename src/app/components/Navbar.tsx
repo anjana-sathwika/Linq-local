@@ -210,6 +210,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface NavbarProps {
   refs: {
@@ -247,9 +248,9 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         {/* Logo */}
         <div className="flex items-center h-10">
           <Image
-            src="/logo.png"
+            src="/linkq.svg"
             alt="LinQ Logo"
-            width={0}
+            width={140}
             height={32}
             className="h-8 w-auto object-contain select-none"
             priority
@@ -257,9 +258,11 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         </div>
 
         {/* Desktop Menu */}
-        <ul className={`hidden md:flex gap-14 ml-10 font-medium transition-colors ${
-          scrolled ? "text-gray-700" : "text-gray-600"
-        }`}>
+        <ul
+          className={`hidden md:flex gap-14 ml-10 font-medium transition-colors ${
+            scrolled ? "text-gray-700" : "text-gray-600"
+          }`}
+        >
           <li
             className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.home)}
@@ -286,13 +289,25 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
           </li>
         </ul>
 
-        {/* Desktop Button */}
-        <button
-          onClick={() => scrollToSection(refs.features)}
-          className="hidden md:block bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition"
-        >
-          JOIN FOR FREE
-        </button>
+        {/* Desktop Buttons */}
+        <div className="hidden md:flex items-center gap-3">
+          <button
+            onClick={() => scrollToSection(refs.features)}
+            className="bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition"
+          >
+            JOIN FOR FREE
+          </button>
+
+          {/* Sankranti villages form */}
+          <Link href="https://forms.gle/FGmHDfHM8sW3bPVW8">
+            <button
+              className="relative overflow-hidden bg-gradient-to-r from-[#FFB703] via-[#FFD166] to-[#FF9F1C] text-[#4A2C00] font-bold px-4 py-2 rounded-full shadow-[0_0_20px_rgba(255,183,3,0.45)] hover:shadow-[0_0_28px_rgba(255,183,3,0.7)] transition-all duration-300 hover:scale-[1.04] text-sm"
+            >
+              🪁🌾Sankranti Travel Form<span className="ml-1">🚙🏍️</span>
+              <span className="pointer-events-none absolute inset-0 bg-white/20 animate-shine" />
+            </button>
+          </Link>
+        </div>
 
         {/* Mobile Hamburger */}
         <div className="md:hidden absolute right-8">
@@ -320,9 +335,11 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         }`}
         style={{ transformOrigin: "top center" }}
       >
-        <ul className={`flex flex-col items-center gap-4 font-medium transition-colors ${
-          scrolled ? "text-gray-700" : "text-gray-600"
-        }`}>
+        <ul
+          className={`flex flex-col items-center gap-4 font-medium transition-colors ${
+            scrolled ? "text-gray-700" : "text-gray-600"
+          }`}
+        >
           <li
             className="hover:text-[#2F5EEA] transition cursor-pointer"
             onClick={() => scrollToSection(refs.home)}

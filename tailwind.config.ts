@@ -30,6 +30,16 @@ module.exports = {
           "system-ui",
         ],
       },
+      keyframes: {
+        shine: {
+          "0%": { transform: "translateX(-150%)" },
+          "50%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(150%)" },
+        },
+      },
+      animation: {
+        shine: "shine 3s linear infinite",
+      },
     },
   },
   plugins: [],
