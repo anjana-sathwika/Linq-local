@@ -248,7 +248,7 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         {/* Logo */}
         <div className="flex items-center h-10">
           <Image
-            src="/linkq.svg"
+            src="/logo.png"
             alt="LinQ Logo"
             width={140}
             height={32}
