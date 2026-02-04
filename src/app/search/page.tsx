@@ -22,7 +22,7 @@ export default function SearchPage() {
   useEffect(() => {
     async function fetchListings() {
       const response = await fetch(
-        "https://sheetdb.io/api/v1/YOUR_SHEETDB_API_ID/search?status=active"
+        "https://sheetdb.io/api/v1/y6sm0l77x4p3n/search?status=active"
       );
       const data = await response.json();
       setAllListings(data);
@@ -85,7 +85,7 @@ export default function SearchPage() {
         {/* Search Box */}
         <div className="bg-white rounded-2xl shadow-md p-6 mb-10">
           <h1 className="text-xl font-bold text-gray-800 mb-4">
-            Search by route (optional)
+            Search by route 
           </h1>
 
           <div className="flex flex-col md:flex-row gap-4">
