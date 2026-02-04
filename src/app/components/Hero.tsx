@@ -20,45 +20,25 @@ export default function Hero() {
         <p className="mt-3 sm:mt-6 text-gray-600 max-w-md sm:max-w-2xl mx-auto text-base sm:text-lg">
           We&apos;re already a thriving community — over{" "}
           <span className="text-[#2F5EEA] font-semibold">35K+ followers</span> and{" "}
-          <span className="text-[#2F5EEA] font-semibold">8K+ daily active users</span>
-          {" "}— united by one goal: smarter, cleaner, affordable commuting.
+          <span className="text-[#2F5EEA] font-semibold">
+            8K+ daily active users
+          </span>{" "}
+          — united by one goal: smarter, cleaner, affordable commuting.
         </p>
 
-        {/* Primary CTAs */}
-        <div className="mt-5 sm:mt-10 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-          <Link href="https://forms.gle/EK6ScmSd65bBH2X5A" passHref>
-            <button className="bg-[#2F5EEA] text-white font-semibold px-8 sm:px-10 py-3 sm:py-4 rounded-full hover:bg-[#1E3FAE] transition">
-              JOIN FOR FREE
-            </button>
-          </Link>
-
-          {/* Sankranti villages form */}
-          <Link href="https://forms.gle/FGmHDfHM8sW3bPVW8">
-            <button
-              className="
-                relative overflow-hidden
-                bg-gradient-to-r from-[#FFB703] via-[#FFD166] to-[#FF9F1C]
-                text-[#4A2C00] font-bold
-                px-8 sm:px-10 py-3 sm:py-4
-                rounded-full
-                shadow-[0_0_25px_rgba(255,183,3,0.45)]
-                hover:shadow-[0_0_35px_rgba(255,183,3,0.7)]
-                transition-all duration-300
-                hover:scale-[1.04] text-sm sm:text-base
-              "
-            >
-              🪁🌾Sankranti Travel Form<span className="ml-1">🚙🏍️</span>
-              <span className="pointer-events-none absolute inset-0 bg-white/20 animate-shine" />
+        {/* Primary CTA */}
+        <div className="mt-6 sm:mt-10">
+          <Link href="/search">
+            <button className="bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-base sm:text-lg">
+              FIND A RIDE PARTNER
             </button>
           </Link>
         </div>
 
         {/* Small note */}
-        <p className="mt-2 sm:mt-4 text-sm sm:text-md text-gray-500 max-w-xs sm:max-w-full mx-auto px-2">
-          Register for early access and get 3 months of free cost-sharing connections.
+        <p className="mt-3 sm:mt-4 text-sm sm:text-md text-gray-500 max-w-xs sm:max-w-full mx-auto px-2">
+          Search for verified commuters. Connect securely. Share rides smarter.
         </p>
-
-        {/* winners removed per request */}
       </div>
     </section>
   );
