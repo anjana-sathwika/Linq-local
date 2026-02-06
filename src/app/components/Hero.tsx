@@ -6,10 +6,22 @@ import Link from "next/link";
 export default function Hero() {
   const startNumber = 28000;
   const endNumber = 35000;
-  const duration = 1500; // animation duration in ms
+  const duration = 1500;
 
   const [count, setCount] = useState(startNumber);
 
+  // 🔤 Typewriter state
+  const texts = [
+    "Turn Empty Seats Into Free Journeys.",
+    "ఖాళీ సీట్లు… కలిసి ప్రయాణం",
+  ];
+
+  const [textIndex, setTextIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [displayText, setDisplayText] = useState("");
+
+  // 🔢 Counter animation
   useEffect(() => {
     let startTime: number | null = null;
 
@@ -32,6 +44,33 @@ export default function Hero() {
     requestAnimationFrame(animateCount);
   }, []);
 
+  // ⌨️ Typewriter effect
+  useEffect(() => {
+    const currentText = texts[textIndex];
+    const speed = isDeleting ? 35 : 70;
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting) {
+        setDisplayText(currentText.substring(0, charIndex + 1));
+        setCharIndex(charIndex + 1);
+
+        if (charIndex + 1 === currentText.length) {
+          setTimeout(() => setIsDeleting(true), 1200);
+        }
+      } else {
+        setDisplayText(currentText.substring(0, charIndex - 1));
+        setCharIndex(charIndex - 1);
+
+        if (charIndex === 0) {
+          setIsDeleting(false);
+          setTextIndex((textIndex + 1) % texts.length);
+        }
+      }
+    }, speed);
+
+    return () => clearTimeout(timeout);
+  }, [charIndex, isDeleting, textIndex]);
+
   return (
     <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 md:px-2 bg-white pt-8 md:pt-24">
       {/* Background gradients */}
@@ -40,18 +79,18 @@ export default function Hero() {
       <div className="z-10 text-center flex flex-col items-center">
         {/* Eyebrow */}
         <p className="text-sm sm:text-base font-semibold tracking-wide text-[#2F5EEA] uppercase mb-3">
-          Stop Riding Alone.
+          Telangana’s No.1 Ride Sharing Community
         </p>
 
-        {/* Main Heading */}
+        {/* 🔥 Typewriter Heading */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold max-w-xl sm:max-w-3xl leading-tight text-gray-900 mx-auto">
-          Find Your Daily Ride Partner <br />
-          <span className="text-[#2F5EEA]">in Telangana</span>
+          {displayText}
+          <span className="animate-pulse">|</span>
         </h1>
 
-        {/* Subtext with animated number */}
+        {/* Sub-headline */}
         <p className="mt-4 sm:mt-6 text-gray-600 max-w-md sm:max-w-2xl mx-auto text-base sm:text-lg">
-          Split fuel. Beat traffic. Meet trusted commuters like you.
+          For daily commuters heading the same way across Telangana.
           <br className="hidden sm:block" />
           Already{" "}
           <span className="text-[#2F5EEA] font-semibold">
@@ -64,7 +103,7 @@ export default function Hero() {
         <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <Link href="/search" className="w-full sm:w-auto">
             <button className="w-full bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-base sm:text-lg shadow-md hover:shadow-lg">
-              Match My Ride 🚀
+              Find a Ride 🚗
             </button>
           </Link>
 
@@ -83,3 +122,4 @@ export default function Hero() {
     </section>
   );
 }
+
