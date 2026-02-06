@@ -82,9 +82,9 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
           </li>
         </ul>
 
-        {/* Desktop CTA */}
+        {/* ✅ Desktop CTA → Scroll to Search */}
         <div className="hidden md:flex items-center">
-          <Link href="/search">
+          <Link href="/#search">
             <button className="bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition">
               FIND A RIDE PARTNER
             </button>
@@ -138,8 +138,8 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
             Careers
           </li>
 
-          {/* Mobile CTA */}
-          <Link href="/search" onClick={() => setMenuOpen(false)}>
+          {/* ✅ Mobile CTA → Scroll to Search */}
+          <Link href="/#search" onClick={() => setMenuOpen(false)}>
             <button className="mt-2 bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition">
               FIND A RIDE PARTNER
             </button>
