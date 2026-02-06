@@ -9,9 +9,9 @@ import Content from "./components/Content";
 import Testimonials from "./components/Testimonials";
 import Differences from "./components/Differences";
 import CoreFeatures from "./components/CoreFeatures";
+import SearchListings from "./components/SearchListings"; // ✅ NEW
 
 export default function Home() {
-  // Refs for scrollable sections
   const heroRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const featuresRef = useRef<HTMLDivElement | null>(null);
@@ -28,10 +28,17 @@ export default function Home() {
         }}
       />
 
+      {/* HERO */}
       <div ref={heroRef}>
         <Hero />
       </div>
 
+      {/* 🔥 SEARCH + LISTINGS (NEW SECTION) */}
+      <section className="scroll-mt-24">
+        <SearchListings />
+      </section>
+
+      {/* CONTENT */}
       <div ref={contentRef}>
         <Content />
       </div>
@@ -39,14 +46,15 @@ export default function Home() {
       <Differences />
       <CoreFeatures />
 
+      {/* FEATURES */}
       <div ref={featuresRef}>
         <Features />
       </div>
 
       <Testimonials />
-
       <CareersCTA />
 
+      {/* FOOTER */}
       <div ref={footerRef}>
         <Footer />
       </div>
