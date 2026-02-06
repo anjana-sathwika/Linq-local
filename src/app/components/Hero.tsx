@@ -47,7 +47,7 @@ export default function Hero() {
   // ⌨️ Typewriter effect
   useEffect(() => {
     const currentText = texts[textIndex];
-    const speed = isDeleting ? 10 : 70;
+    const speed = isDeleting ? 17 : 70;
 
     const timeout = setTimeout(() => {
       if (!isDeleting) {
