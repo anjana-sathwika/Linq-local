@@ -107,11 +107,6 @@ export default function Hero() {
             </button>
           </Link>
 
-          <Link href="/post-ride" className="w-full sm:w-auto">
-            <button className="w-full border-2 border-[#2F5EEA] text-[#2F5EEA] font-semibold px-10 py-4 rounded-full hover:bg-[#2F5EEA] hover:text-white transition text-base sm:text-lg">
-              Offer a Ride
-            </button>
-          </Link>
         </div>
 
         {/* Trust line */}
