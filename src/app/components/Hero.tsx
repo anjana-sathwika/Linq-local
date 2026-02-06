@@ -10,9 +10,9 @@ export default function Hero() {
 
   const [count, setCount] = useState(startNumber);
 
-  // 🔤 Typewriter state
+  // 🔤 Typewriter texts
   const texts = [
-    "Turning Empty Seats Into shared Journeys.",
+    "Turning Empty Seats Into Shared Journeys.",
     "ఖాళీ సీట్లు… కలిసి ప్రయాణం",
   ];
 
@@ -47,7 +47,7 @@ export default function Hero() {
   // ⌨️ Typewriter effect
   useEffect(() => {
     const currentText = texts[textIndex];
-    const speed = isDeleting ? 17 : 70;
+    const typingSpeed = isDeleting ? 17 : 70;
 
     const timeout = setTimeout(() => {
       if (!isDeleting) {
@@ -55,7 +55,7 @@ export default function Hero() {
         setCharIndex(charIndex + 1);
 
         if (charIndex + 1 === currentText.length) {
-          setTimeout(() => setIsDeleting(true), 1200);
+          setTimeout(() => setIsDeleting(true), 700);
         }
       } else {
         setDisplayText(currentText.substring(0, charIndex - 1));
@@ -66,7 +66,7 @@ export default function Hero() {
           setTextIndex((textIndex + 1) % texts.length);
         }
       }
-    }, speed);
+    }, typingSpeed);
 
     return () => clearTimeout(timeout);
   }, [charIndex, isDeleting, textIndex]);
@@ -99,14 +99,13 @@ export default function Hero() {
           people are riding smarter every day.
         </p>
 
-        {/* CTAs */}
+        {/* CTA → Scroll to Search */}
         <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <Link href="/search" className="w-full sm:w-auto">
+          <Link href="/#search" className="w-full sm:w-auto">
             <button className="w-full bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-base sm:text-lg shadow-md hover:shadow-lg">
               Find a Ride 🚗
             </button>
           </Link>
-
         </div>
 
         {/* Trust line */}
