@@ -12,7 +12,7 @@ export default function Hero() {
 
   // 🔤 Typewriter state
   const texts = [
-    "Turn Empty Seats Into Free Journeys.",
+    "Turning Empty Seats Into shared Journeys.",
     "ఖాళీ సీట్లు… కలిసి ప్రయాణం",
   ];
 
