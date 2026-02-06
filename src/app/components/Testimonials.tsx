@@ -1,77 +1,81 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Testimonials() {
   const testimonials = [
     {
       quote:
-        "I really liked the Go Together Ride platform - it's a great idea for connecting riders and people who need transport. The response is quick, and they help find matching leads fast. The team communicates clearly and is very supportive.",
-      instaLink: "https://www.instagram.com/p/DPlX7nzkaUs/?igsh=cTU2ZXRoN3ppZzQ3",
+        "I really liked the Go Together Ride platform - it's a great idea for connecting riders and people who need transport.",
+      instaLink: "https://www.instagram.com/p/DPlX7nzkaUs/",
     },
     {
       quote:
-        "Thank you so much for helping me out till I find a perfect lead. You guys are really spending time and finding the exact match with patience.",
-      instaLink: "https://www.instagram.com/p/DPwCSIgiAZV/?igsh=MTExdWk1ZDdpODd5cw==",
+        "Thank you so much for helping me out till I find a perfect lead. You guys are really patient and supportive.",
+      instaLink: "https://www.instagram.com/p/DPwCSIgiAZV/",
     },
     {
       quote:
-        "While using instagram I found Go Together rides. Such a good initiative to save time and money.",
-      instaLink: "https://www.instagram.com/p/DPtdNCJkVgz/?igsh=dnFpejc1MGFvbXR2",
+        "Such a good initiative to save time and money. I felt very happy using Go Together rides.",
+      instaLink: "https://www.instagram.com/p/DPtdNCJkVgz/",
     },
     {
       quote:
-        "I got a wonderful partner through Go Together. Smooth experience and reliable coordination.",
-      instaLink: "https://www.instagram.com/p/DPQWyRDEQD6/?igsh=N282bWJyOW1sNDN4",
+        "Smooth experience and reliable coordination. This platform makes finding partners easy.",
+      instaLink: "https://www.instagram.com/p/DPQWyRDEQD6/",
     },
     {
       quote:
-        "Had an amazing experience with Go Together Riders. Safe rides and great vibes!",
-      instaLink: "https://www.instagram.com/p/DPN2noEkQaJ/?igsh=dnFlNzZ5YnRxejJs",
+        "Safe rides, great vibes, and lots of memories made. Can't wait to ride again!",
+      instaLink: "https://www.instagram.com/p/DPN2noEkQaJ/",
     },
   ];
 
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState(0);
+  const row1Ref = useRef<HTMLDivElement>(null);
+  const row2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let lastScrollY = window.scrollY;
+    let x1 = 0;
+    let x2 = 0;
+    const speed = 0.3; // 🔥 CONTROL SPEED HERE
 
-    const onScroll = () => {
-      const delta = window.scrollY - lastScrollY;
-      lastScrollY = window.scrollY;
+    const animate = () => {
+      x1 -= speed;
+      x2 += speed;
 
-      setOffset((prev) => prev - delta * 0.35); // 🔥 velocity control
+      if (row1Ref.current) {
+        row1Ref.current.style.transform = `translateX(${x1}px)`;
+      }
+      if (row2Ref.current) {
+        row2Ref.current.style.transform = `translateX(${x2}px)`;
+      }
+
+      requestAnimationFrame(animate);
     };
 
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    animate();
   }, []);
 
   return (
     <section className="bg-white py-20 overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-14">
           <h3 className="text-3xl font-extrabold text-gray-800">
             What our community says
           </h3>
           <p className="text-gray-500 mt-2">
-            Real stories from riders across LinQ <br />
-            Click Instagram icon to view testimonials
+            Real stories from riders across LinQ
           </p>
         </div>
       </div>
 
-      <div className="overflow-hidden">
-        <div
-          ref={trackRef}
-          className="flex gap-6 w-max will-change-transform"
-          style={{ transform: `translateX(${offset}px)` }}
-        >
+      {/* Row 1 */}
+      <div className="overflow-hidden mb-8">
+        <div ref={row1Ref} className="flex gap-6 w-max">
           {[...testimonials, ...testimonials].map((t, i) => (
             <div
-              key={i}
-              className="min-w-[300px] sm:min-w-[360px] bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+              key={`row1-${i}`}
+              className="min-w-[280px] sm:min-w-[360px] bg-white border rounded-2xl p-6 shadow-sm"
             >
               <a
                 href={t.instaLink}
@@ -83,21 +87,4 @@ export default function Testimonials() {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-5 h-5 text-[#E1306C]"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2z" />
-                  </svg>
-                </div>
-              </a>
-
-              <p className="text-gray-700 text-sm leading-relaxed">
-                “{t.quote}”
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+                    v
