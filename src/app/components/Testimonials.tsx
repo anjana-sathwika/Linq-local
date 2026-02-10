@@ -64,37 +64,35 @@ export default function Testimonials() {
     const pause = () => (paused = true);
     const resume = () => (paused = false);
 
-    const el1 = row1Ref.current;
-    const el2 = row2Ref.current;
+    const r1 = row1Ref.current;
+    const r2 = row2Ref.current;
 
-    el1?.addEventListener("mouseenter", pause);
-    el1?.addEventListener("mouseleave", resume);
-    el2?.addEventListener("mouseenter", pause);
-    el2?.addEventListener("mouseleave", resume);
+    r1?.addEventListener("mouseenter", pause);
+    r1?.addEventListener("mouseleave", resume);
+    r2?.addEventListener("mouseenter", pause);
+    r2?.addEventListener("mouseleave", resume);
 
-    el1?.addEventListener("touchstart", pause);
-    el2?.addEventListener("touchstart", pause);
+    r1?.addEventListener("touchstart", pause);
+    r2?.addEventListener("touchstart", pause);
 
-    return () => {
-      cancelAnimationFrame(raf);
-    };
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const renderCards = (arr: typeof testimonials) =>
-    [...arr, ...arr].map((t, i) => (
+    [...arr, ...arr, ...arr].map((t, i) => (
       <a
         key={i}
         href={t.instaLink}
         target="_blank"
-        className="min-w-[280px] sm:min-w-[360px] bg-white border rounded-3xl p-7 shadow-md hover:shadow-xl transition"
+        className="min-w-[320px] sm:min-w-[380px] bg-white border rounded-3xl p-7 shadow-md hover:shadow-xl transition"
       >
-        {/* insta icon */}
+        {/* Insta icon */}
         <div className="flex justify-center mb-5">
-          <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
+              width="24"
+              height="24"
               viewBox="0 0 24 24"
               fill="white"
             >
@@ -109,8 +107,7 @@ export default function Testimonials() {
       </a>
     ));
 
-  // shuffle second row so they don't match
-  const row2 = [...testimonials].reverse();
+  const reversed = [...testimonials].reverse();
 
   return (
     <section className="py-28 bg-white overflow-hidden">
@@ -139,7 +136,7 @@ export default function Testimonials() {
           ref={row2Ref}
           className="flex gap-8 w-max will-change-transform"
         >
-          {renderCards(row2)}
+          {renderCards(reversed)}
         </div>
       </div>
     </section>
