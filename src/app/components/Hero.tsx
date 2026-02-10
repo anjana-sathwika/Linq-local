@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 
 export default function Hero() {
   const startNumber = 28000;
@@ -9,116 +8,98 @@ export default function Hero() {
   const duration = 1500;
 
   const [count, setCount] = useState(startNumber);
+  const [index, setIndex] = useState(0);
 
   const texts = [
     "Turning Empty Seats Into Shared Journeys.",
-    "ఖాళీ సీట్లు… కలిసి ప్రయాణం",
+    "ఖాళీ సీట్లను ప్రయాణాలుగా మార్చే చిన్న ప్రయత్నం..",
   ];
 
-  const [textIndex, setTextIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [displayText, setDisplayText] = useState("");
-
+  // counter animation
   useEffect(() => {
     let startTime: number | null = null;
 
-    const animateCount = (timestamp: number) => {
+    const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = timestamp - startTime;
 
-      const percentage = Math.min(progress / duration, 1);
+      const percent = Math.min(progress / duration, 1);
       const current = Math.floor(
-        startNumber + (endNumber - startNumber) * percentage
+        startNumber + (endNumber - startNumber) * percent
       );
 
       setCount(current);
 
-      if (percentage < 1) requestAnimationFrame(animateCount);
+      if (percent < 1) requestAnimationFrame(animate);
     };
 
-    requestAnimationFrame(animateCount);
+    requestAnimationFrame(animate);
   }, []);
 
+  // morph text switch
   useEffect(() => {
-    const currentText = texts[textIndex];
-    const typingSpeed = isDeleting ? 17 : 70;
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % texts.length);
+    }, 2500);
 
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        setDisplayText(currentText.substring(0, charIndex + 1));
-        setCharIndex(charIndex + 1);
-
-        if (charIndex + 1 === currentText.length) {
-          setTimeout(() => setIsDeleting(true), 700);
-        }
-      } else {
-        setDisplayText(currentText.substring(0, charIndex - 1));
-        setCharIndex(charIndex - 1);
-
-        if (charIndex === 0) {
-          setIsDeleting(false);
-          setTextIndex((textIndex + 1) % texts.length);
-        }
-      }
-    }, typingSpeed);
-
-    return () => clearTimeout(timeout);
-  }, [charIndex, isDeleting, textIndex]);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 bg-white pt-24 overflow-hidden">
 
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,233,255,0.06),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(0,230,118,0.06),transparent_40%)] pointer-events-none"></div>
-
-      {/* 💬 CHAT BACKGROUND IMAGES */}
+      {/* BACKGROUND CHAT IMAGES */}
       <div className="absolute inset-0 pointer-events-none">
 
         <img
           src="/chat1.jpeg"
-          className="hidden md:block absolute left-[-60px] top-[140px] w-[230px] opacity-10 blur-lg rotate-[-8deg]"
+          className="hidden md:block absolute left-10 top-32 w-[260px] opacity-30 blur-sm rotate-[-8deg]"
         />
 
         <img
           src="/chat2.jpeg"
-          className="hidden md:block absolute left-[40px] bottom-[80px] w-[240px] opacity-10 blur-lg rotate-[6deg]"
+          className="hidden md:block absolute left-10 bottom-20 w-[260px] opacity-30 blur-sm rotate-[6deg]"
         />
 
         <img
           src="/chat3.jpeg"
-          className="hidden md:block absolute right-[60px] top-[200px] w-[240px] opacity-10 blur-lg rotate-[8deg]"
+          className="hidden md:block absolute right-10 top-40 w-[260px] opacity-30 blur-sm rotate-[8deg]"
         />
 
         <img
           src="/chat4.jpeg"
-          className="hidden md:block absolute right-[-40px] bottom-[60px] w-[220px] opacity-10 blur-lg rotate-[-6deg]"
+          className="hidden md:block absolute right-10 bottom-20 w-[260px] opacity-30 blur-sm rotate-[-6deg]"
         />
       </div>
 
-      {/* HERO CONTENT */}
+      {/* CONTENT */}
       <div className="relative z-10 flex flex-col items-center">
 
         <p className="text-sm font-semibold tracking-wide text-[#2F5EEA] uppercase mb-3">
           Telangana’s No.1 Ride Sharing Community
         </p>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold max-w-3xl leading-tight text-gray-900">
-          {displayText}
-          <span className="animate-pulse">|</span>
+        {/* TEXT MORPH */}
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold max-w-3xl leading-tight text-gray-900 h-[90px] flex items-center justify-center">
+          <span
+            key={index}
+            className="transition-all duration-700 ease-in-out opacity-0 animate-fadeIn"
+          >
+            {texts[index]}
+          </span>
         </h1>
 
-        <p className="mt-6 text-gray-600 max-w-xl text-lg">
-          For daily commuters heading the same way across Telangana.
-          <br />
-          Already{" "}
-          <span className="text-[#2F5EEA] font-semibold">
+        {/* BIG COUNT */}
+        <div className="mt-8 flex flex-col items-center">
+          <div className="text-5xl md:text-7xl font-extrabold text-[#2F5EEA]">
             {count.toLocaleString()}+
-          </span>{" "}
-          people are riding smarter every day.
-        </p>
+          </div>
+          <p className="text-gray-600 mt-2 text-lg">
+            people already riding smarter across Telangana
+          </p>
+        </div>
 
-        {/* SCROLL BUTTON */}
+        {/* BUTTON */}
         <div className="mt-10">
           <a href="#search">
             <button className="bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-lg shadow-md hover:shadow-lg">
@@ -132,6 +113,26 @@ export default function Hero() {
         </p>
 
       </div>
+
+      {/* animation style */}
+      <style jsx>{`
+        .animate-fadeIn {
+          animation: fadeIn 0.7s forwards;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+            filter: blur(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
+      `}</style>
     </section>
   );
 }
