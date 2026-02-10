@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 interface Listing {
@@ -18,7 +18,9 @@ export default function SearchListings() {
   const [results, setResults] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch ALL active listings
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // fetch listings
   useEffect(() => {
     async function fetchListings() {
       const response = await fetch(
@@ -50,10 +52,18 @@ export default function SearchListings() {
     });
 
     setResults(filtered);
+
+    // auto scroll to results box
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   }
 
   return (
-    <section className="bg-gray-50 rounded-3xl p-6 md:p-10 mt-16">
+    <section
+      id="search"
+      className="bg-gray-50 rounded-3xl p-6 md:p-10 mt-24 scroll-mt-32"
+    >
       {/* CTA */}
       <div className="bg-[#2F5EEA]/10 border border-[#2F5EEA]/20 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -65,15 +75,26 @@ export default function SearchListings() {
           </p>
         </div>
 
-        <Link href="/connect/new">
-          <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
-            Give my details
-          </button>
-        </Link>
+        <div className="flex gap-3 flex-wrap">
+          <Link href="/connect/new">
+            <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
+              Give my details
+            </button>
+          </Link>
+
+          {/* INSTAGRAM BUTTON */}
+          <a
+            href="https://www.instagram.com/gotogetherrides"
+            target="_blank"
+            className="bg-pink-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
+          >
+            View on Insta 📸
+          </a>
+        </div>
       </div>
 
-      {/* Search */}
-      <div className="bg-white rounded-2xl shadow-md p-6 mb-8">
+      {/* SEARCH BOX */}
+      <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
         <h3 className="text-xl font-bold text-gray-800 mb-4">
           Search by route
         </h3>
@@ -104,51 +125,58 @@ export default function SearchListings() {
         </div>
       </div>
 
-      {/* Listings */}
-      {loading ? (
-        <p className="text-center text-gray-500">Loading people…</p>
-      ) : results.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {results.map((person) => {
-            const maskedName = person.name?.slice(0, 3) + "***";
-            const isFemale = person.gender?.toLowerCase() === "female";
+      {/* RESULTS CONTAINER WITH SCROLL */}
+      <div
+        ref={resultsRef}
+        className="bg-white rounded-2xl shadow-inner p-4 max-h-[500px] overflow-y-auto"
+      >
+        {loading ? (
+          <p className="text-center text-gray-500 py-10">Loading people…</p>
+        ) : results.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {results.map((person) => {
+              const maskedName = person.name?.slice(0, 3) + "***";
+              const isFemale = person.gender?.toLowerCase() === "female";
 
-            return (
-              <div
-                key={person.id}
-                className="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-between"
-              >
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-gray-800">
-                      {maskedName}
-                    </span>
-                    <span
-                      className={`text-lg ${
-                        isFemale ? "text-pink-400" : "text-[#3256B5]"
-                      }`}
-                    >
-                      {isFemale ? "♀" : "♂"}
-                    </span>
+              return (
+                <div
+                  key={person.id}
+                  className="bg-gray-50 rounded-2xl shadow-sm p-6 flex items-center justify-between"
+                >
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-gray-800">
+                        {maskedName}
+                      </span>
+                      <span
+                        className={`text-lg ${
+                          isFemale ? "text-pink-400" : "text-[#3256B5]"
+                        }`}
+                      >
+                        {isFemale ? "♀" : "♂"}
+                      </span>
+                    </div>
+
+                    <div className="text-sm text-gray-500">
+                      {person.from} → {person.to}
+                    </div>
                   </div>
 
-                  <div className="text-sm text-gray-500">
-                    {person.from} → {person.to}
-                  </div>
+                  <Link href={`/connect/${person.id}`}>
+                    <button className="bg-[#3256B5] text-white px-4 py-2 rounded-full font-medium hover:opacity-90 transition">
+                      Connect
+                    </button>
+                  </Link>
                 </div>
-
-                <Link href={`/connect/${person.id}`}>
-                  <button className="bg-[#3256B5] text-white px-4 py-2 rounded-full font-medium hover:opacity-90 transition">
-                    Connect
-                  </button>
-                </Link>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <p className="text-center text-gray-500">No matches found yet.</p>
-      )}
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 py-10">
+            No matches found yet.
+          </p>
+        )}
+      </div>
     </section>
   );
 }
