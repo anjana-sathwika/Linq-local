@@ -31,90 +31,116 @@ export default function Testimonials() {
     },
   ];
 
-  const trackRef = useRef<HTMLDivElement>(null);
+  const row1Ref = useRef<HTMLDivElement>(null);
+  const row2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let x = 0;
+    let x1 = 0;
+    let x2 = 0;
     const speed = 0.35;
     let raf: number;
 
+    let paused = false;
+
     const animate = () => {
-      if (trackRef.current) {
-        const width = trackRef.current.scrollWidth / 2;
-        x -= speed;
+      if (!paused && row1Ref.current && row2Ref.current) {
+        const width = row1Ref.current.scrollWidth / 2;
 
-        if (Math.abs(x) >= width) x = 0;
+        x1 -= speed;
+        x2 += speed;
 
-        trackRef.current.style.transform = `translateX(${x}px)`;
+        if (Math.abs(x1) >= width) x1 = 0;
+        if (x2 >= width) x2 = 0;
+
+        row1Ref.current.style.transform = `translateX(${x1}px)`;
+        row2Ref.current.style.transform = `translateX(${x2}px)`;
       }
 
       raf = requestAnimationFrame(animate);
     };
 
     raf = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(raf);
+
+    const pause = () => (paused = true);
+    const resume = () => (paused = false);
+
+    const el1 = row1Ref.current;
+    const el2 = row2Ref.current;
+
+    el1?.addEventListener("mouseenter", pause);
+    el1?.addEventListener("mouseleave", resume);
+    el2?.addEventListener("mouseenter", pause);
+    el2?.addEventListener("mouseleave", resume);
+
+    el1?.addEventListener("touchstart", pause);
+    el2?.addEventListener("touchstart", pause);
+
+    return () => {
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
-  const cards = [...testimonials, ...testimonials];
+  const renderCards = (arr: typeof testimonials) =>
+    [...arr, ...arr].map((t, i) => (
+      <a
+        key={i}
+        href={t.instaLink}
+        target="_blank"
+        className="min-w-[280px] sm:min-w-[360px] bg-white border rounded-3xl p-7 shadow-md hover:shadow-xl transition"
+      >
+        {/* insta icon */}
+        <div className="flex justify-center mb-5">
+          <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="white"
+            >
+              <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm4.25 5a5 5 0 100 10 5 5 0 000-10zm5.25-1.5a.75.75 0 110 1.5.75.75 0 010-1.5z"/>
+            </svg>
+          </div>
+        </div>
+
+        <p className="text-gray-700 text-center leading-relaxed">
+          “{t.quote}”
+        </p>
+      </a>
+    ));
+
+  // shuffle second row so they don't match
+  const row2 = [...testimonials].reverse();
 
   return (
     <section className="py-28 bg-white overflow-hidden">
       <div className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-          Loved by our riders
+          What our riders say
         </h2>
         <p className="text-gray-500 mt-3">
           Real feedback from our growing community
         </p>
       </div>
 
-      <div className="relative overflow-hidden">
+      {/* ROW 1 */}
+      <div className="overflow-hidden mb-10">
         <div
-          ref={trackRef}
-          className="flex gap-8 w-max items-center will-change-transform"
+          ref={row1Ref}
+          className="flex gap-8 w-max will-change-transform"
         >
-          {cards.map((t, i) => (
-            <div
-              key={i}
-              className="group relative min-w-[280px] sm:min-w-[360px]"
-            >
-              {/* card */}
-              <div className="bg-white border rounded-3xl p-7 shadow-lg transition-all duration-500 group-hover:scale-105">
-
-                {/* insta */}
-                <a
-                  href={t.instaLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex justify-center mb-5"
-                >
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-md">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="white"
-                    >
-                      <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zM12 7a5 5 0 100 10 5 5 0 000-10zm5.25-1.5a.75.75 0 110 1.5.75.75 0 010-1.5z" />
-                    </svg>
-                  </div>
-                </a>
-
-                <p className="text-gray-700 text-center leading-relaxed">
-                  “{t.quote}”
-                </p>
-              </div>
-
-              {/* glow */}
-              <div className="absolute inset-0 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 bg-blue-400 transition"></div>
-            </div>
-          ))}
+          {renderCards(testimonials)}
         </div>
+      </div>
 
-        {/* center fade mask */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent"></div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent"></div>
+      {/* ROW 2 */}
+      <div className="overflow-hidden">
+        <div
+          ref={row2Ref}
+          className="flex gap-8 w-max will-change-transform"
+        >
+          {renderCards(row2)}
+        </div>
       </div>
     </section>
   );
