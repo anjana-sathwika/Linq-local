@@ -31,97 +31,90 @@ export default function Testimonials() {
     },
   ];
 
-  const row1Ref = useRef<HTMLDivElement>(null);
-  const row2Ref = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let x1 = 0;
-    let x2 = 0;
-    const speed = 0.4;
-    let rafId: number;
+    let x = 0;
+    const speed = 0.35;
+    let raf: number;
 
     const animate = () => {
-      if (row1Ref.current && row2Ref.current) {
-        const rowWidth = row1Ref.current.scrollWidth / 2;
+      if (trackRef.current) {
+        const width = trackRef.current.scrollWidth / 2;
+        x -= speed;
 
-        x1 -= speed;
-        x2 += speed;
+        if (Math.abs(x) >= width) x = 0;
 
-        if (Math.abs(x1) >= rowWidth) x1 = 0;
-        if (x2 >= rowWidth) x2 = 0;
-
-        row1Ref.current.style.transform = `translateX(${x1}px)`;
-        row2Ref.current.style.transform = `translateX(${x2}px)`;
+        trackRef.current.style.transform = `translateX(${x}px)`;
       }
 
-      rafId = requestAnimationFrame(animate);
+      raf = requestAnimationFrame(animate);
     };
 
-    rafId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafId);
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
-  const renderCards = () =>
-    [...testimonials, ...testimonials].map((t, i) => (
-      <div
-        key={i}
-        className="min-w-[280px] sm:min-w-[360px] bg-white border rounded-2xl p-6 shadow-md hover:shadow-lg transition"
-      >
-        {/* Insta icon */}
-        <a
-          href={t.instaLink}
-          target="_blank"
-          rel="noreferrer"
-          className="flex justify-center mb-4"
-        >
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="white"
-            >
-              <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zM12 7a5 5 0 100 10 5 5 0 000-10zm5.25-1.5a.75.75 0 110 1.5.75.75 0 010-1.5z" />
-            </svg>
-          </div>
-        </a>
-
-        <p className="text-gray-700 text-sm leading-relaxed text-center">
-          “{t.quote}”
-        </p>
-      </div>
-    ));
+  const cards = [...testimonials, ...testimonials];
 
   return (
-    <section className="bg-white py-24 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-6 text-center mb-14">
-        <h3 className="text-3xl md:text-4xl font-extrabold text-gray-800">
-          What our community says
-        </h3>
+    <section className="py-28 bg-white overflow-hidden">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+          Loved by our riders
+        </h2>
         <p className="text-gray-500 mt-3">
-          Real stories from riders across LinQ
+          Real feedback from our growing community
         </p>
       </div>
 
-      {/* Row 1 */}
-      <div className="overflow-hidden mb-8">
+      <div className="relative overflow-hidden">
         <div
-          ref={row1Ref}
-          className="flex gap-6 w-max will-change-transform"
+          ref={trackRef}
+          className="flex gap-8 w-max items-center will-change-transform"
         >
-          {renderCards()}
-        </div>
-      </div>
+          {cards.map((t, i) => (
+            <div
+              key={i}
+              className="group relative min-w-[280px] sm:min-w-[360px]"
+            >
+              {/* card */}
+              <div className="bg-white border rounded-3xl p-7 shadow-lg transition-all duration-500 group-hover:scale-105">
 
-      {/* Row 2 */}
-      <div className="overflow-hidden">
-        <div
-          ref={row2Ref}
-          className="flex gap-6 w-max will-change-transform"
-        >
-          {renderCards()}
+                {/* insta */}
+                <a
+                  href={t.instaLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex justify-center mb-5"
+                >
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-md">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="white"
+                    >
+                      <path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zM12 7a5 5 0 100 10 5 5 0 000-10zm5.25-1.5a.75.75 0 110 1.5.75.75 0 010-1.5z" />
+                    </svg>
+                  </div>
+                </a>
+
+                <p className="text-gray-700 text-center leading-relaxed">
+                  “{t.quote}”
+                </p>
+              </div>
+
+              {/* glow */}
+              <div className="absolute inset-0 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 bg-blue-400 transition"></div>
+            </div>
+          ))}
         </div>
+
+        {/* center fade mask */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent"></div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent"></div>
       </div>
     </section>
   );
