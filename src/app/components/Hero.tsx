@@ -94,7 +94,7 @@ export default function Hero() {
           <div className="text-6xl md:text-8xl font-extrabold text-[#2F5EEA]">
             {count.toLocaleString()}+
           </div>
-          <p className="text-gray-600 text-lg mt-2">
+          <p className="text-gray-600 text-lg mt-3">
             people already riding smarter across Telangana
           </p>
         </div>
@@ -103,7 +103,7 @@ export default function Hero() {
         <div className="mt-6">
           <a href="#search">
             <button className="bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-lg shadow-md hover:shadow-lg">
-              Find a Ride 🚗
+              Find a Ride partner 
             </button>
           </a>
         </div>
