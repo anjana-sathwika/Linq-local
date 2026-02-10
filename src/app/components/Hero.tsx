@@ -10,7 +10,6 @@ export default function Hero() {
 
   const [count, setCount] = useState(startNumber);
 
-  // 🔤 Typewriter texts
   const texts = [
     "Turning Empty Seats Into Shared Journeys.",
     "ఖాళీ సీట్లు… కలిసి ప్రయాణం",
@@ -21,7 +20,6 @@ export default function Hero() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [displayText, setDisplayText] = useState("");
 
-  // 🔢 Counter animation
   useEffect(() => {
     let startTime: number | null = null;
 
@@ -36,15 +34,12 @@ export default function Hero() {
 
       setCount(current);
 
-      if (percentage < 1) {
-        requestAnimationFrame(animateCount);
-      }
+      if (percentage < 1) requestAnimationFrame(animateCount);
     };
 
     requestAnimationFrame(animateCount);
   }, []);
 
-  // ⌨️ Typewriter effect
   useEffect(() => {
     const currentText = texts[textIndex];
     const typingSpeed = isDeleting ? 17 : 70;
@@ -72,58 +67,50 @@ export default function Hero() {
   }, [charIndex, isDeleting, textIndex]);
 
   return (
-    <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 md:px-2 bg-white pt-8 md:pt-24 overflow-hidden">
+    <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 bg-white pt-24 overflow-hidden">
 
-      {/* Background gradients */}
+      {/* Background gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,233,255,0.06),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(0,230,118,0.06),transparent_40%)] pointer-events-none"></div>
 
-      {/* 💬 BACKGROUND CHAT SCREENSHOTS */}
+      {/* 💬 CHAT BACKGROUND IMAGES */}
       <div className="absolute inset-0 pointer-events-none">
 
-        {/* LEFT TOP */}
         <img
-          src="/testimonials/chat1.png"
-          className="hidden md:block absolute left-[-60px] top-[120px] w-[220px] opacity-10 blur-lg rotate-[-8deg]"
+          src="/chat1.jpeg"
+          className="hidden md:block absolute left-[-60px] top-[140px] w-[230px] opacity-10 blur-lg rotate-[-8deg]"
         />
 
-        {/* LEFT BOTTOM */}
         <img
-          src="/testimonials/chat2.png"
-          className="hidden md:block absolute left-[40px] bottom-[60px] w-[240px] opacity-10 blur-lg rotate-[6deg]"
+          src="/chat2.jpeg"
+          className="hidden md:block absolute left-[40px] bottom-[80px] w-[240px] opacity-10 blur-lg rotate-[6deg]"
         />
 
-        {/* RIGHT MID */}
         <img
-          src="/testimonials/chat3.png"
-          className="hidden md:block absolute right-[40px] top-[180px] w-[240px] opacity-10 blur-lg rotate-[8deg]"
+          src="/chat3.jpeg"
+          className="hidden md:block absolute right-[60px] top-[200px] w-[240px] opacity-10 blur-lg rotate-[8deg]"
         />
 
-        {/* RIGHT BOTTOM */}
         <img
-          src="/testimonials/chat4.png"
-          className="hidden md:block absolute right-[-40px] bottom-[40px] w-[220px] opacity-10 blur-lg rotate-[-6deg]"
+          src="/chat4.jpeg"
+          className="hidden md:block absolute right-[-40px] bottom-[60px] w-[220px] opacity-10 blur-lg rotate-[-6deg]"
         />
-
       </div>
 
-      {/* MAIN HERO CONTENT */}
-      <div className="relative z-10 text-center flex flex-col items-center">
+      {/* HERO CONTENT */}
+      <div className="relative z-10 flex flex-col items-center">
 
-        {/* Eyebrow */}
-        <p className="text-sm sm:text-base font-semibold tracking-wide text-[#2F5EEA] uppercase mb-3">
+        <p className="text-sm font-semibold tracking-wide text-[#2F5EEA] uppercase mb-3">
           Telangana’s No.1 Ride Sharing Community
         </p>
 
-        {/* 🔥 Typewriter Heading */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold max-w-xl sm:max-w-3xl leading-tight text-gray-900 mx-auto">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold max-w-3xl leading-tight text-gray-900">
           {displayText}
           <span className="animate-pulse">|</span>
         </h1>
 
-        {/* Sub-headline */}
-        <p className="mt-4 sm:mt-6 text-gray-600 max-w-md sm:max-w-2xl mx-auto text-base sm:text-lg">
+        <p className="mt-6 text-gray-600 max-w-xl text-lg">
           For daily commuters heading the same way across Telangana.
-          <br className="hidden sm:block" />
+          <br />
           Already{" "}
           <span className="text-[#2F5EEA] font-semibold">
             {count.toLocaleString()}+
@@ -131,17 +118,16 @@ export default function Hero() {
           people are riding smarter every day.
         </p>
 
-        {/* CTA */}
-        <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <Link href="/#search" className="w-full sm:w-auto">
-            <button className="w-full bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-base sm:text-lg shadow-md hover:shadow-lg">
-              FIND A RIDE PARTNER 
+        {/* SCROLL BUTTON */}
+        <div className="mt-10">
+          <a href="#search">
+            <button className="bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-lg shadow-md hover:shadow-lg">
+              Find a Ride 🚗
             </button>
-          </Link>
+          </a>
         </div>
 
-        {/* Trust line */}
-        <p className="mt-4 text-sm sm:text-md text-gray-500">
+        <p className="mt-4 text-sm text-gray-500">
           Free to join • Verified users • No commission • No app needed
         </p>
 
