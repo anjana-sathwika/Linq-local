@@ -36,71 +36,71 @@ export default function Hero() {
     requestAnimationFrame(animate);
   }, []);
 
-  // morph text switch
+  // morph switch
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % texts.length);
-    }, 2500);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 bg-white pt-24 overflow-hidden">
+    <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 bg-white pt-28 overflow-hidden">
 
-      {/* BACKGROUND CHAT IMAGES */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* ===== BACKGROUND CHAT IMAGES ===== */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
 
         <img
           src="/chat1.jpeg"
-          className="hidden md:block absolute left-10 top-32 w-[260px] opacity-30 blur-sm rotate-[-8deg]"
+          className="absolute left-6 top-40 w-[260px] opacity-40 rotate-[-8deg] shadow-xl"
         />
 
         <img
           src="/chat2.jpeg"
-          className="hidden md:block absolute left-10 bottom-20 w-[260px] opacity-30 blur-sm rotate-[6deg]"
+          className="absolute left-10 bottom-24 w-[260px] opacity-40 rotate-[6deg] shadow-xl"
         />
 
         <img
           src="/chat3.jpeg"
-          className="hidden md:block absolute right-10 top-40 w-[260px] opacity-30 blur-sm rotate-[8deg]"
+          className="absolute right-10 top-44 w-[260px] opacity-40 rotate-[8deg] shadow-xl"
         />
 
         <img
           src="/chat4.jpeg"
-          className="hidden md:block absolute right-10 bottom-20 w-[260px] opacity-30 blur-sm rotate-[-6deg]"
+          className="absolute right-10 bottom-24 w-[260px] opacity-40 rotate-[-6deg] shadow-xl"
         />
       </div>
 
-      {/* CONTENT */}
-      <div className="relative z-10 flex flex-col items-center">
+      {/* ===== CONTENT ===== */}
+      <div className="relative z-10 flex flex-col items-center max-w-4xl">
 
-        <p className="text-sm font-semibold tracking-wide text-[#2F5EEA] uppercase mb-3">
+        <p className="text-sm font-semibold tracking-wide text-[#2F5EEA] uppercase mb-6">
           Telangana’s No.1 Ride Sharing Community
         </p>
 
         {/* TEXT MORPH */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold max-w-3xl leading-tight text-gray-900 h-[90px] flex items-center justify-center">
-          <span
+        <div className="h-[110px] flex items-center justify-center mb-6">
+          <h1
             key={index}
-            className="transition-all duration-700 ease-in-out opacity-0 animate-fadeIn"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-gray-900 transition-all duration-700"
           >
             {texts[index]}
-          </span>
-        </h1>
+          </h1>
+        </div>
 
         {/* BIG COUNT */}
-        <div className="mt-8 flex flex-col items-center">
-          <div className="text-5xl md:text-7xl font-extrabold text-[#2F5EEA]">
+        <div className="mt-6 mb-6">
+          <div className="text-6xl md:text-8xl font-extrabold text-[#2F5EEA]">
             {count.toLocaleString()}+
           </div>
-          <p className="text-gray-600 mt-2 text-lg">
+          <p className="text-gray-600 text-lg mt-2">
             people already riding smarter across Telangana
           </p>
         </div>
 
         {/* BUTTON */}
-        <div className="mt-10">
+        <div className="mt-6">
           <a href="#search">
             <button className="bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-lg shadow-md hover:shadow-lg">
               Find a Ride 🚗
@@ -113,26 +113,6 @@ export default function Hero() {
         </p>
 
       </div>
-
-      {/* animation style */}
-      <style jsx>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.7s forwards;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px) scale(0.98);
-            filter: blur(6px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            filter: blur(0);
-          }
-        }
-      `}</style>
     </section>
   );
 }
