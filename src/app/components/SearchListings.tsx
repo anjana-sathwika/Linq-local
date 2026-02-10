@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Instagram } from "lucide-react";
 
 interface Listing {
   id: string;
@@ -20,7 +21,6 @@ export default function SearchListings() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // fetch listings
   useEffect(() => {
     async function fetchListings() {
       const response = await fetch(
@@ -53,7 +53,6 @@ export default function SearchListings() {
 
     setResults(filtered);
 
-    // auto scroll to results box
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
@@ -86,14 +85,15 @@ export default function SearchListings() {
           <a
             href="https://www.instagram.com/gotogetherrides"
             target="_blank"
-            className="bg-pink-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
+            className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
           >
-            View on Insta 📸
+            <Instagram size={18} />
+            View on Insta
           </a>
         </div>
       </div>
 
-      {/* SEARCH BOX */}
+      {/* SEARCH */}
       <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
         <h3 className="text-xl font-bold text-gray-800 mb-4">
           Search by route
@@ -125,7 +125,7 @@ export default function SearchListings() {
         </div>
       </div>
 
-      {/* RESULTS CONTAINER WITH SCROLL */}
+      {/* RESULTS SCROLL BOX */}
       <div
         ref={resultsRef}
         className="bg-white rounded-2xl shadow-inner p-4 max-h-[500px] overflow-y-auto"
