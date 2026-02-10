@@ -8,7 +8,6 @@ import Link from "next/link";
 interface NavbarProps {
   refs: {
     home: React.RefObject<HTMLDivElement | null>;
-    content: React.RefObject<HTMLDivElement | null>;
     features: React.RefObject<HTMLDivElement | null>;
     footer: React.RefObject<HTMLDivElement | null>;
   };
@@ -31,9 +30,9 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
         scrolled
-          ? "max-w-[92%] left-[4%] bg-white shadow-[0_10px_30px_rgba(0,0,0,0.1)] backdrop-blur-xl rounded-[2.5rem] mt-4 translate-y-3 border border-gray-200"
+          ? "max-w-[92%] left-[4%] bg-white shadow rounded-[2.5rem] mt-4 translate-y-3 border border-gray-200"
           : "bg-transparent max-w-full left-0 mt-0 translate-y-0"
       }`}
     >
@@ -51,38 +50,30 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         </div>
 
         {/* Desktop Menu */}
-        <ul
-          className={`hidden md:flex gap-14 ml-10 font-medium transition-colors ${
-            scrolled ? "text-gray-700" : "text-gray-600"
-          }`}
-        >
+        <ul className="hidden md:flex gap-14 ml-10 font-medium text-gray-700">
           <li
-            className="hover:text-[#2F5EEA] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] cursor-pointer"
             onClick={() => scrollToSection(refs.home)}
           >
             Home
           </li>
+
           <li
-            className="hover:text-[#2F5EEA] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] cursor-pointer"
             onClick={() => scrollToSection(refs.features)}
           >
             Features
           </li>
+
           <li
-            className="hover:text-[#2F5EEA] transition cursor-pointer"
-            onClick={() => scrollToSection(refs.content)}
-          >
-            About
-          </li>
-          <li
-            className="hover:text-[#2F5EEA] transition cursor-pointer"
+            className="hover:text-[#2F5EEA] cursor-pointer"
             onClick={() => scrollToSection(refs.footer)}
           >
             Careers
           </li>
         </ul>
 
-        {/* ✅ Desktop CTA → Scroll to Search */}
+        {/* CTA */}
         <div className="hidden md:flex items-center">
           <Link href="/#search">
             <button className="bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition">
@@ -91,11 +82,11 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
           </Link>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile button */}
         <div className="md:hidden absolute right-8">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 bg-[#5FA9FF]/20 rounded-full border border-[#2F5EEA]/30 shadow-lg transition hover:bg-[#5FA9FF]/30"
+            className="p-2 bg-[#5FA9FF]/20 rounded-full border border-[#2F5EEA]/30"
           >
             {menuOpen ? (
               <X className="text-[#2F5EEA] w-6 h-6" />
@@ -106,41 +97,19 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile dropdown */}
       <div
-        className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
+        className={`md:hidden transition-all duration-300 overflow-hidden ${
           menuOpen ? "max-h-64 opacity-100 py-4" : "max-h-0 opacity-0 py-0"
-        } mx-8 mb-4 bg-white border border-gray-200 shadow-[0_10px_25px_rgba(0,0,0,0.1)] rounded-2xl`}
+        } mx-8 mb-4 bg-white border shadow rounded-2xl`}
       >
         <ul className="flex flex-col items-center gap-4 font-medium text-gray-700">
-          <li
-            className="hover:text-[#2F5EEA] transition cursor-pointer"
-            onClick={() => scrollToSection(refs.home)}
-          >
-            Home
-          </li>
-          <li
-            className="hover:text-[#2F5EEA] transition cursor-pointer"
-            onClick={() => scrollToSection(refs.features)}
-          >
-            Features
-          </li>
-          <li
-            className="hover:text-[#2F5EEA] transition cursor-pointer"
-            onClick={() => scrollToSection(refs.content)}
-          >
-            About
-          </li>
-          <li
-            className="hover:text-[#2F5EEA] transition cursor-pointer"
-            onClick={() => scrollToSection(refs.footer)}
-          >
-            Careers
-          </li>
+          <li onClick={() => scrollToSection(refs.home)}>Home</li>
+          <li onClick={() => scrollToSection(refs.features)}>Features</li>
+          <li onClick={() => scrollToSection(refs.footer)}>Careers</li>
 
-          {/* ✅ Mobile CTA → Scroll to Search */}
-          <Link href="/components/SearchListing.tsx" onClick={() => setMenuOpen(false)}>
-            <button className="mt-2 bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition">
+          <Link href="/#search" onClick={() => setMenuOpen(false)}>
+            <button className="mt-2 bg-[#2F5EEA] text-white px-6 py-2 rounded-full">
               FIND A RIDE PARTNER
             </button>
           </Link>
