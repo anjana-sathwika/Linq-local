@@ -72,11 +72,43 @@ export default function Hero() {
   }, [charIndex, isDeleting, textIndex]);
 
   return (
-    <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 md:px-2 bg-white pt-8 md:pt-24">
+    <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 md:px-2 bg-white pt-8 md:pt-24 overflow-hidden">
+
       {/* Background gradients */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,233,255,0.06),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(0,230,118,0.06),transparent_40%)] pointer-events-none"></div>
 
-      <div className="z-10 text-center flex flex-col items-center">
+      {/* 💬 BACKGROUND CHAT SCREENSHOTS */}
+      <div className="absolute inset-0 pointer-events-none">
+
+        {/* LEFT TOP */}
+        <img
+          src="/testimonials/chat1.png"
+          className="hidden md:block absolute left-[-60px] top-[120px] w-[220px] opacity-10 blur-lg rotate-[-8deg]"
+        />
+
+        {/* LEFT BOTTOM */}
+        <img
+          src="/testimonials/chat2.png"
+          className="hidden md:block absolute left-[40px] bottom-[60px] w-[240px] opacity-10 blur-lg rotate-[6deg]"
+        />
+
+        {/* RIGHT MID */}
+        <img
+          src="/testimonials/chat3.png"
+          className="hidden md:block absolute right-[40px] top-[180px] w-[240px] opacity-10 blur-lg rotate-[8deg]"
+        />
+
+        {/* RIGHT BOTTOM */}
+        <img
+          src="/testimonials/chat4.png"
+          className="hidden md:block absolute right-[-40px] bottom-[40px] w-[220px] opacity-10 blur-lg rotate-[-6deg]"
+        />
+
+      </div>
+
+      {/* MAIN HERO CONTENT */}
+      <div className="relative z-10 text-center flex flex-col items-center">
+
         {/* Eyebrow */}
         <p className="text-sm sm:text-base font-semibold tracking-wide text-[#2F5EEA] uppercase mb-3">
           Telangana’s No.1 Ride Sharing Community
@@ -99,11 +131,11 @@ export default function Hero() {
           people are riding smarter every day.
         </p>
 
-        {/* CTA → Scroll to Search */}
+        {/* CTA */}
         <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <Link href="/#search" className="w-full sm:w-auto">
             <button className="w-full bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-base sm:text-lg shadow-md hover:shadow-lg">
-              Find a Ride 🚗
+              FIND A RIDE PARTNER 
             </button>
           </Link>
         </div>
@@ -112,6 +144,7 @@ export default function Hero() {
         <p className="mt-4 text-sm sm:text-md text-gray-500">
           Free to join • Verified users • No commission • No app needed
         </p>
+
       </div>
     </section>
   );
