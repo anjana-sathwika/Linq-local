@@ -109,7 +109,7 @@ export default function Hero() {
         </div>
 
         <p className="mt-4 text-sm text-gray-500">
-          Free to join • Verified users • No commission • No app needed
+         It's Free 😉 • Verified users • No commission 
         </p>
 
       </div>
