@@ -38,20 +38,20 @@ export default function Navbar({ refs }: NavbarProps) {
     >
       <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-3">
 
-        {/* LOGO — aligned with nav text */}
+        {/* SMALL COMPACT LOGO */}
         <div className="flex items-center">
           <Image
             src="/logo.png"
             alt="LinQ Logo"
-            width={120}
-            height={28}
-            className="h-6 md:h-7 w-auto object-contain select-none"
+            width={95}
+            height={22}
+            className="h-5 md:h-6 w-auto object-contain select-none"
             priority
           />
         </div>
 
         {/* DESKTOP MENU */}
-        <ul className="hidden md:flex items-center gap-10 lg:gap-14 ml-6 font-medium text-gray-700">
+        <ul className="hidden md:flex items-center gap-10 lg:gap-14 ml-6 font-medium text-[15px] text-gray-700">
           <li
             className="hover:text-[#2F5EEA] cursor-pointer transition"
             onClick={() => scrollToSection(refs.home)}
@@ -77,7 +77,7 @@ export default function Navbar({ refs }: NavbarProps) {
         {/* DESKTOP CTA */}
         <div className="hidden md:flex items-center">
           <Link href="/#search">
-            <button className="bg-[#2F5EEA] text-white font-semibold px-5 py-2 rounded-full hover:bg-[#1E3FAE] transition">
+            <button className="bg-[#2F5EEA] text-white font-semibold px-5 py-[7px] rounded-full hover:bg-[#1E3FAE] transition text-sm">
               Find a Ride
             </button>
           </Link>
@@ -90,9 +90,9 @@ export default function Navbar({ refs }: NavbarProps) {
             className="p-2 bg-white rounded-full border border-gray-200 shadow-sm"
           >
             {menuOpen ? (
-              <X className="text-[#2F5EEA] w-6 h-6" />
+              <X className="text-[#2F5EEA] w-5 h-5" />
             ) : (
-              <Menu className="text-[#2F5EEA] w-6 h-6" />
+              <Menu className="text-[#2F5EEA] w-5 h-5" />
             )}
           </button>
         </div>
@@ -104,13 +104,13 @@ export default function Navbar({ refs }: NavbarProps) {
           menuOpen ? "max-h-72 opacity-100 py-4" : "max-h-0 opacity-0 py-0"
         } mx-4 sm:mx-6 mb-4 bg-white border border-gray-200 shadow-lg rounded-2xl`}
       >
-        <ul className="flex flex-col items-center gap-5 font-medium text-gray-700">
+        <ul className="flex flex-col items-center gap-5 font-medium text-gray-700 text-sm">
           <li onClick={() => scrollToSection(refs.home)}>Home</li>
           <li onClick={() => scrollToSection(refs.features)}>Features</li>
           <li onClick={() => scrollToSection(refs.footer)}>Careers</li>
 
           <Link href="/#search" onClick={() => setMenuOpen(false)}>
-            <button className="bg-[#2F5EEA] text-white px-6 py-2 rounded-full">
+            <button className="bg-[#2F5EEA] text-white px-6 py-2 rounded-full text-sm">
               Find a Ride
             </button>
           </Link>
