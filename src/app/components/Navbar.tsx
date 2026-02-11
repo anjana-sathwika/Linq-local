@@ -32,26 +32,26 @@ export default function Navbar({ refs }: NavbarProps) {
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
         scrolled
-          ? "max-w-[94%] md:max-w-[92%] left-[3%] md:left-[4%] bg-white shadow-lg rounded-[2rem] md:rounded-[2.5rem] mt-3 md:mt-4 translate-y-2 md:translate-y-3 border border-gray-200"
+          ? "max-w-[94%] md:max-w-[92%] left-[3%] md:left-[4%] bg-white shadow-md rounded-[1.8rem] md:rounded-[2.3rem] mt-3 md:mt-4 translate-y-2 md:translate-y-3 border border-gray-200"
           : "bg-transparent max-w-full left-0 mt-0 translate-y-0"
       }`}
     >
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-3">
+      <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-2">
 
-        {/* SMALL COMPACT LOGO */}
+        {/* EXTRA SMALL LOGO */}
         <div className="flex items-center">
           <Image
             src="/logo.png"
             alt="LinQ Logo"
-            width={95}
-            height={22}
-            className="h-5 md:h-6 w-auto object-contain select-none"
+            width={65}
+            height={16}
+            className="h-3 md:h-4 w-auto object-contain select-none"
             priority
           />
         </div>
 
         {/* DESKTOP MENU */}
-        <ul className="hidden md:flex items-center gap-10 lg:gap-14 ml-6 font-medium text-[15px] text-gray-700">
+        <ul className="hidden md:flex items-center gap-10 lg:gap-14 ml-6 font-medium text-[13px] text-gray-700">
           <li
             className="hover:text-[#2F5EEA] cursor-pointer transition"
             onClick={() => scrollToSection(refs.home)}
@@ -77,7 +77,7 @@ export default function Navbar({ refs }: NavbarProps) {
         {/* DESKTOP CTA */}
         <div className="hidden md:flex items-center">
           <Link href="/#search">
-            <button className="bg-[#2F5EEA] text-white font-semibold px-5 py-[7px] rounded-full hover:bg-[#1E3FAE] transition text-sm">
+            <button className="bg-[#2F5EEA] text-white font-semibold px-4 py-[6px] rounded-full hover:bg-[#1E3FAE] transition text-[12px]">
               Find a Ride
             </button>
           </Link>
@@ -87,12 +87,12 @@ export default function Navbar({ refs }: NavbarProps) {
         <div className="md:hidden">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 bg-white rounded-full border border-gray-200 shadow-sm"
+            className="p-1.5 bg-white rounded-full border border-gray-200 shadow-sm"
           >
             {menuOpen ? (
-              <X className="text-[#2F5EEA] w-5 h-5" />
+              <X className="text-[#2F5EEA] w-4 h-4" />
             ) : (
-              <Menu className="text-[#2F5EEA] w-5 h-5" />
+              <Menu className="text-[#2F5EEA] w-4 h-4" />
             )}
           </button>
         </div>
