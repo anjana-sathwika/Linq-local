@@ -15,7 +15,7 @@ export default function Hero() {
     "ఖాళీ సీట్లను ప్రయాణాలుగా మార్చే చిన్న ప్రయత్నం..",
   ];
 
-  // counter animation
+  /* COUNT ANIMATION */
   useEffect(() => {
     let startTime: number | null = null;
 
@@ -36,7 +36,7 @@ export default function Hero() {
     requestAnimationFrame(animate);
   }, []);
 
-  // morph switch
+  /* TEXT SWITCH */
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % texts.length);
@@ -46,72 +46,71 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative flex flex-col items-center justify-center text-center min-h-screen px-6 bg-white pt-28 overflow-hidden">
+    <section className="relative flex flex-col items-center justify-center text-center min-h-[90vh] md:min-h-screen px-4 sm:px-6 bg-white pt-24 md:pt-28 overflow-hidden">
 
-      {/* ===== BACKGROUND CHAT IMAGES ===== */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* ================= BACKGROUND IMAGES (DESKTOP ONLY) ================= */}
+      <div className="hidden md:block absolute inset-0 z-0 pointer-events-none">
 
         <img
           src="/chat1.jpeg"
-          className="absolute left-6 top-40 w-[260px] opacity-40 rotate-[-8deg] shadow-xl"
+          className="absolute left-6 top-40 w-[240px] opacity-40 rotate-[-8deg] shadow-xl"
         />
 
         <img
           src="/chat2.jpeg"
-          className="absolute left-10 bottom-24 w-[260px] opacity-40 rotate-[6deg] shadow-xl"
+          className="absolute left-10 bottom-24 w-[240px] opacity-40 rotate-[6deg] shadow-xl"
         />
 
         <img
           src="/chat3.jpeg"
-          className="absolute right-10 top-44 w-[260px] opacity-40 rotate-[8deg] shadow-xl"
+          className="absolute right-10 top-44 w-[240px] opacity-40 rotate-[8deg] shadow-xl"
         />
 
         <img
           src="/chat4.jpeg"
-          className="absolute right-10 bottom-24 w-[260px] opacity-40 rotate-[-6deg] shadow-xl"
+          className="absolute right-10 bottom-24 w-[240px] opacity-40 rotate-[-6deg] shadow-xl"
         />
       </div>
 
-      {/* ===== CONTENT ===== */}
+      {/* ================= CONTENT ================= */}
       <div className="relative z-10 flex flex-col items-center max-w-4xl">
 
-        <p className="text-sm font-semibold tracking-wide text-[#2F5EEA] uppercase mb-6">
+        <p className="text-xs sm:text-sm font-semibold tracking-wide text-[#2F5EEA] uppercase mb-5 sm:mb-6">
           Telangana’s No.1 Ride Sharing Community
         </p>
 
-        {/* TEXT MORPH */}
-        <div className="h-[110px] flex items-center justify-center mb-6">
+        {/* TEXT SWITCH */}
+        <div className="h-[90px] sm:h-[110px] flex items-center justify-center mb-4 sm:mb-6 px-2">
           <h1
             key={index}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-gray-900 transition-all duration-700"
+            className="text-3xl sm:text-4xl md:text-6xl font-bold leading-tight text-gray-900 transition-all duration-700"
           >
             {texts[index]}
           </h1>
         </div>
 
-        {/* BIG COUNT */}
-        <div className="mt-6 mb-6">
-          <div className="text-6xl md:text-8xl font-extrabold text-[#2F5EEA]">
+        {/* COUNT */}
+        <div className="mt-4 mb-4 sm:mb-6">
+          <div className="text-5xl sm:text-6xl md:text-8xl font-extrabold text-[#2F5EEA]">
             {count.toLocaleString()}+
           </div>
-          <p className="text-gray-600 text-lg mt-3">
+          <p className="text-gray-600 text-sm sm:text-base md:text-lg mt-2 sm:mt-3">
             people already riding smarter across Telangana
           </p>
         </div>
 
         {/* BUTTON */}
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           <a href="#search">
-            <button className="bg-[#2F5EEA] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#1E3FAE] transition text-lg shadow-md hover:shadow-lg">
-              Find a Ride partner 
+            <button className="bg-[#2F5EEA] text-white font-semibold px-7 sm:px-10 py-3 sm:py-4 rounded-full hover:bg-[#1E3FAE] transition text-base sm:text-lg shadow-md hover:shadow-lg">
+              Find a Ride partner
             </button>
           </a>
         </div>
 
-        <p className="mt-4 text-sm text-gray-500">
-         It's Free 😉 • Verified users • No commission 
+        <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-500">
+          It's Free 😉 • Verified users • No commission
         </p>
-
       </div>
     </section>
   );
