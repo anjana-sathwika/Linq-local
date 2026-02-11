@@ -38,7 +38,7 @@ export default function Testimonials() {
     let raf: number;
     let paused = false;
 
-    const speed = window.innerWidth < 640 ? 0.2 : 0.35;
+    const speed = window.innerWidth < 640 ? 0.22 : 0.35;
 
     const animate = () => {
       if (!paused && rowRef.current) {
@@ -91,8 +91,8 @@ export default function Testimonials() {
               target="_blank"
               rel="noopener noreferrer"
               className="
-                min-w-[260px] sm:min-w-[320px] md:min-w-[380px]
-                bg-white rounded-3xl p-7 md:p-8
+                min-w-[240px] sm:min-w-[280px] md:min-w-[320px]
+                bg-white rounded-3xl p-6 md:p-7
                 border border-gray-200
                 shadow-sm hover:shadow-xl
                 transition-all duration-300
@@ -101,11 +101,18 @@ export default function Testimonials() {
               {/* icon */}
               <div className="flex justify-center mb-4">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">IG</span>
+                  <span className="text-white text-xs font-bold">IG</span>
                 </div>
               </div>
 
-              <p className="text-gray-700 text-center leading-relaxed text-sm md:text-base">
+              {/* TEXT → forced 2-3 lines */}
+              <p className="
+                text-gray-700 text-center
+                text-sm md:text-base
+                leading-relaxed
+                max-w-[220px] md:max-w-[260px]
+                mx-auto
+              ">
                 “{t.quote}”
               </p>
             </a>
