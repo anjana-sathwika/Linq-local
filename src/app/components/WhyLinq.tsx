@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
@@ -9,8 +10,8 @@ function CountUp({ end, start }: { end: number; start: boolean }) {
     if (!start) return;
 
     let current = 0;
-    const duration = 1600;
-    const step = 20;
+    const duration = 1400;
+    const step = 16;
     const increment = end / (duration / step);
 
     const timer = setInterval(() => {
@@ -36,15 +37,15 @@ const cards = [
   },
   {
     title: "Transparent Cost Sharing",
-    desc: "Fair distance-based splits with zero surge pricing or hidden fees.",
+    desc: "Fair distance-based splits with zero surge pricing.",
   },
   {
     title: "Verified Community",
-    desc: "Profiles, trust scores, and reviews ensure safe shared rides.",
+    desc: "Profiles, trust scores, and reviews ensure safe rides.",
   },
   {
     title: "Eco-Conscious Travel",
-    desc: "Reduce congestion and carbon emissions every commute.",
+    desc: "Reduce congestion and emissions every commute.",
   },
 ];
 
@@ -53,19 +54,25 @@ export default function WhyLinq() {
   const [startCount, setStartCount] = useState(false);
   const sectionRef = useRef<HTMLDivElement | null>(null);
 
-  // start number animation only when section visible
+  // FIXED MOBILE OBSERVER
   useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
+        if (entries[0].isIntersecting) {
           setStartCount(true);
+          observer.disconnect();
         }
       },
-      { threshold: 0.4 }
+      {
+        threshold: 0.2,
+        rootMargin: "0px 0px -80px 0px", // helps mobile trigger earlier
+      }
     );
 
-    if (sectionRef.current) observer.observe(sectionRef.current);
+    observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
@@ -73,90 +80,97 @@ export default function WhyLinq() {
   useEffect(() => {
     const i = setInterval(() => {
       setActive((p) => (p + 1) % cards.length);
-    }, 2500);
+    }, 2400);
     return () => clearInterval(i);
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="w-full py-24 px-6 bg-[#F7F9FF]"
-    >
+    <section ref={sectionRef} className="w-full py-20 md:py-24 px-4 bg-[#F7F9FF]">
       <div className="max-w-7xl mx-auto text-center">
 
         {/* HEADING */}
-        <h2 className="text-4xl md:text-5xl font-semibold mb-6">
+        <h2 className="text-3xl md:text-5xl font-semibold mb-4">
           Smarter Commutes.
           <span className="text-[#2F5EEA]"> Built on Community.</span>
         </h2>
 
-        <p className="text-gray-600 max-w-2xl mx-auto mb-16">
+        <p className="text-gray-600 max-w-2xl mx-auto mb-12 md:mb-16 text-sm md:text-base">
           LinQ connects commuters on the same routes to share rides,
-          reduce costs and travel responsibly through a trusted network.
+          reduce costs and travel responsibly.
         </p>
 
-        {/* STATS */}
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
-          <div className="bg-white p-10 rounded-3xl shadow-md">
-            <h3 className="text-3xl font-bold text-[#2F5EEA]">
+        {/* ===== STATS ROW (MOBILE FIXED) ===== */}
+        <div className="flex justify-between gap-3 md:gap-8 mb-16">
+
+          <div className="flex-1 bg-white py-6 md:py-10 rounded-2xl md:rounded-3xl shadow-sm">
+            <h3 className="text-xl md:text-3xl font-bold text-[#2F5EEA]">
               <CountUp end={34000} start={startCount} />+
             </h3>
-            <p className="text-gray-600 mt-2">Trusted commuters</p>
+            <p className="text-gray-600 text-xs md:text-sm mt-1">
+              Commuters
+            </p>
           </div>
 
-          <div className="bg-white p-10 rounded-3xl shadow-md">
-            <h3 className="text-3xl font-bold text-[#2F5EEA]">
+          <div className="flex-1 bg-white py-6 md:py-10 rounded-2xl md:rounded-3xl shadow-sm">
+            <h3 className="text-xl md:text-3xl font-bold text-[#2F5EEA]">
               <CountUp end={8000} start={startCount} />+
             </h3>
-            <p className="text-gray-600 mt-2">Daily active users</p>
+            <p className="text-gray-600 text-xs md:text-sm mt-1">
+              Daily users
+            </p>
           </div>
 
-          <div className="bg-white p-10 rounded-3xl shadow-md">
-            <h3 className="text-3xl font-bold text-[#2F5EEA]">
+          <div className="flex-1 bg-white py-6 md:py-10 rounded-2xl md:rounded-3xl shadow-sm">
+            <h3 className="text-xl md:text-3xl font-bold text-[#2F5EEA]">
               4.8★
             </h3>
-            <p className="text-gray-600 mt-2">Average rating</p>
+            <p className="text-gray-600 text-xs md:text-sm mt-1">
+              Rating
+            </p>
           </div>
+
         </div>
 
-        {/* CARDS */}
-        <div className="grid md:grid-cols-2 gap-8 mb-24">
+        {/* ===== FEATURE CARDS ===== */}
+        <div className="grid md:grid-cols-2 gap-5 md:gap-8 mb-20">
           {cards.map((card, i) => (
             <div
               key={i}
-              className={`p-10 rounded-3xl bg-white border transition-all duration-500 shadow-md
+              className={`p-6 md:p-10 rounded-3xl bg-white border transition-all duration-500 shadow-sm
               ${
                 active === i
                   ? "border-[#2F5EEA] shadow-[0_20px_60px_rgba(47,94,234,0.25)] scale-[1.02]"
                   : "border-gray-200"
               }`}
             >
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">
+              <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-gray-900">
                 {card.title}
               </h3>
-              <p className="text-gray-600">{card.desc}</p>
+              <p className="text-gray-600 text-sm md:text-base">
+                {card.desc}
+              </p>
             </div>
           ))}
         </div>
 
-        {/* CAREERS CTA (NO CONFETTI) */}
-        <div className="text-center py-16 px-6 bg-[#2F5EEA] text-white rounded-3xl shadow-lg">
+        {/* ===== CAREERS CTA ===== */}
+        <div className="text-center py-14 md:py-16 px-6 bg-[#2F5EEA] text-white rounded-3xl shadow-lg">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">
+            <h2 className="text-3xl md:text-5xl font-extrabold mb-3">
               We are Expanding Our Family!
             </h2>
 
-            <p className="text-lg mb-8 text-white/90">
+            <p className="text-base md:text-lg mb-7 text-white/90">
               Join the passionate LinQ team shaping smarter travel.
             </p>
 
             <Link href="https://docs.google.com/forms/d/e/1FAIpQLScCsaBXeMS_FCF_LIyGpQsWoagHuDv-FWoSEa_ul5dRpem1Qw/viewform">
-              <button className="bg-white text-[#2F5EEA] px-10 py-4 rounded-full font-semibold shadow-md hover:bg-gray-50 transition">
+              <button className="bg-white text-[#2F5EEA] px-8 md:px-10 py-3 md:py-4 rounded-full font-semibold shadow-md hover:bg-gray-50 transition">
                 Apply Now
               </button>
             </Link>
 
-            <p className="mt-6 text-sm text-white/80">
+            <p className="mt-5 text-xs md:text-sm text-white/80">
               Exciting roles. Real impact. ✨
             </p>
           </div>
