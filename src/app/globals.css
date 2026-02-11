@@ -10,7 +10,7 @@
   --font-sans: var(--font-sora);
 }
 
-/* 🔴 FIX: prevent phone dark mode from turning site black */
+/* Prevent phone dark mode from turning site black */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #ffffff;
@@ -27,8 +27,13 @@ body,
   position: relative;
 }
 
+/* 🔥 CRITICAL: fixes zoomed-out mobile feel */
+html {
+  font-size: 16px;
+}
+
 body {
-  background: #ffffff !important; /* 🔴 FORCE WHITE BACKGROUND */
+  background: #ffffff !important;
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial;
@@ -39,6 +44,47 @@ body {
 img {
   max-width: 100%;
   height: auto;
+}
+
+/* ===============================
+   MOBILE OPTIMIZATION
+================================*/
+@media (max-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 34px !important;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 26px !important;
+  }
+
+  h3 {
+    font-size: 22px !important;
+  }
+
+  p {
+    font-size: 15px !important;
+  }
+
+  button {
+    font-size: 16px !important;
+    padding: 14px 22px !important;
+  }
+
+  section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 
 /* Hide heavy decorative backgrounds on phones */
@@ -82,7 +128,6 @@ input[type="submit"] {
 
 .animate-insta-flip {
   animation: insta-flip-dance 2.2s infinite cubic-bezier(.68,-0.55,.27,1.55);
-  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -108,7 +153,6 @@ input[type="submit"] {
   transition: transform 420ms cubic-bezier(.22,.9,.32,1),
               box-shadow 420ms ease,
               opacity 320ms ease;
-  will-change: transform, box-shadow, opacity;
 }
 
 .card-appeal:hover {
@@ -116,16 +160,11 @@ input[type="submit"] {
   box-shadow: 0 18px 50px rgba(16,24,40,0.12);
 }
 
-.card-appeal:active {
-  transform: translateY(-2px) scale(0.992) !important;
-}
-
 /* ===============================
    GLOW BORDER
 ================================*/
 .glow-border {
   position: relative;
-  overflow: visible;
 }
 
 .glow-border::before {
@@ -140,73 +179,13 @@ input[type="submit"] {
     rgba(6,182,212,0.12),
     rgba(124,58,237,0.12)
   );
-  -webkit-mask: linear-gradient(#000 0 0) content-box,
-                 linear-gradient(#000 0 0);
-  mask: linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  filter: blur(8px) saturate(120%);
+  filter: blur(8px);
   opacity: 0;
-  transition: opacity 360ms ease, transform 420ms cubic-bezier(.22,.9,.32,1);
+  transition: opacity 360ms ease;
 }
 
 .glow-border.active::before {
   opacity: 1;
-  transform: translateY(-2px) scale(1.02);
-}
-
-/* ===============================
-   GLOSSY SHIMMER
-================================*/
-.glossy-overlay {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.18) 0%,
-    rgba(255,255,255,0.06) 40%,
-    rgba(255,255,255,0) 70%
-  );
-  mix-blend-mode: overlay;
-  opacity: 0;
-  transform: scale(1);
-  transition: opacity 300ms ease,
-              transform 420ms cubic-bezier(.22,.9,.32,1);
-}
-
-.glossy-overlay.active {
-  opacity: 1;
-  transform: scale(1.02);
-}
-
-.glossy-overlay::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 40%;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.65) 50%,
-    rgba(255,255,255,0) 100%
-  );
-  transform: translateX(-120%);
-  mix-blend-mode: screen;
-}
-
-@keyframes shine {
-  from { transform: translateX(-120%); }
-  to { transform: translateX(120%); }
-}
-
-.glossy-overlay.active::after {
-  animation: shine 1800ms linear infinite;
 }
 
 /* ===============================
