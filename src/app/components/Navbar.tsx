@@ -43,8 +43,8 @@ export default function Navbar({ refs }: NavbarProps) {
           <Image
             src="/logo.png"
             alt="LinQ Logo"
-            width={65}
-            height={16}
+            width={60}
+            height={14}
             className="h-3 md:h-4 w-auto object-contain select-none"
             priority
           />
