@@ -89,12 +89,12 @@ export default function WhyLinq() {
       <div className="max-w-7xl mx-auto text-center">
 
         {/* HEADING */}
-        <h2 className="text-3xl md:text-5xl font-semibold mb-4">
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-3 leading-tight px-2">
           Smarter Commutes.
-          <span className="text-[#2F5EEA]"> Built on Community.</span>
+          <span className="text-[#2F5EEA] block sm:inline"> {" "} Built on Community.</span>
         </h2>
 
-        <p className="text-gray-600 max-w-2xl mx-auto mb-12 md:mb-16 text-sm md:text-base">
+        <p className="text-gray-600 max-w-xl mx-auto mb-10 md:mb-14 text-sm md:text-base px-4">
           LinQ connects commuters on the same routes to share rides,
           reduce costs and travel responsibly.
         </p>
