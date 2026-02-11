@@ -1,29 +1,30 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import confetti from "canvas-confetti";
 
-function CountUp({ end }: { end: number }) {
+function CountUp({ end, start }: { end: number; start: boolean }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    let start = 0;
-    const duration = 1500;
+    if (!start) return;
+
+    let current = 0;
+    const duration = 1600;
     const step = 20;
-    const inc = end / (duration / step);
+    const increment = end / (duration / step);
 
     const timer = setInterval(() => {
-      start += inc;
-      if (start >= end) {
+      current += increment;
+      if (current >= end) {
         setCount(end);
         clearInterval(timer);
       } else {
-        setCount(Math.floor(start));
+        setCount(Math.floor(current));
       }
     }, step);
 
     return () => clearInterval(timer);
-  }, [end]);
+  }, [start, end]);
 
   return <span>{count.toLocaleString()}</span>;
 }
@@ -49,26 +50,16 @@ const cards = [
 
 export default function WhyLinq() {
   const [active, setActive] = useState(0);
-
-  // auto highlight cards
-  useEffect(() => {
-    const i = setInterval(() => {
-      setActive((p) => (p + 1) % cards.length);
-    }, 2500);
-    return () => clearInterval(i);
-  }, []);
-
-  // confetti section
+  const [startCount, setStartCount] = useState(false);
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const triggered = useRef(false);
 
+  // start number animation only when section visible
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting && !triggered.current) {
-          triggered.current = true;
-          launchConfetti();
+        if (entry.isIntersecting) {
+          setStartCount(true);
         }
       },
       { threshold: 0.4 }
@@ -78,32 +69,22 @@ export default function WhyLinq() {
     return () => observer.disconnect();
   }, []);
 
-  const launchConfetti = () => {
-    const duration = 2000;
-    const end = Date.now() + duration;
-
-    (function frame() {
-      confetti({
-        particleCount: 3,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-      });
-      confetti({
-        particleCount: 3,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-      });
-      if (Date.now() < end) requestAnimationFrame(frame);
-    })();
-  };
+  // auto highlight cards
+  useEffect(() => {
+    const i = setInterval(() => {
+      setActive((p) => (p + 1) % cards.length);
+    }, 2500);
+    return () => clearInterval(i);
+  }, []);
 
   return (
-    <section className="w-full py-24 px-6 bg-[#F7F9FF]">
+    <section
+      ref={sectionRef}
+      className="w-full py-24 px-6 bg-[#F7F9FF]"
+    >
       <div className="max-w-7xl mx-auto text-center">
 
-        {/* HEADER */}
+        {/* HEADING */}
         <h2 className="text-4xl md:text-5xl font-semibold mb-6">
           Smarter Commutes.
           <span className="text-[#2F5EEA]"> Built on Community.</span>
@@ -118,20 +99,22 @@ export default function WhyLinq() {
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           <div className="bg-white p-10 rounded-3xl shadow-md">
             <h3 className="text-3xl font-bold text-[#2F5EEA]">
-              <CountUp end={34000} />+
+              <CountUp end={34000} start={startCount} />+
             </h3>
             <p className="text-gray-600 mt-2">Trusted commuters</p>
           </div>
 
           <div className="bg-white p-10 rounded-3xl shadow-md">
             <h3 className="text-3xl font-bold text-[#2F5EEA]">
-              <CountUp end={8000} />+
+              <CountUp end={8000} start={startCount} />+
             </h3>
             <p className="text-gray-600 mt-2">Daily active users</p>
           </div>
 
           <div className="bg-white p-10 rounded-3xl shadow-md">
-            <h3 className="text-3xl font-bold text-[#2F5EEA]">4.8★</h3>
+            <h3 className="text-3xl font-bold text-[#2F5EEA]">
+              4.8★
+            </h3>
             <p className="text-gray-600 mt-2">Average rating</p>
           </div>
         </div>
@@ -156,11 +139,8 @@ export default function WhyLinq() {
           ))}
         </div>
 
-        {/* CAREERS CTA */}
-        <div
-          ref={sectionRef}
-          className="text-center py-16 px-6 bg-[#2F5EEA] text-white rounded-3xl shadow-lg relative overflow-hidden"
-        >
+        {/* CAREERS CTA (NO CONFETTI) */}
+        <div className="text-center py-16 px-6 bg-[#2F5EEA] text-white rounded-3xl shadow-lg">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-extrabold mb-4">
               We are Expanding Our Family!
