@@ -89,7 +89,7 @@ export default function WhyLinq() {
       <div className="max-w-7xl mx-auto text-center">
 
         {/* HEADING */}
-        <h2 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-3 leading-tight px-2">
+        <h2 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-3 leading-tight px-2 text-black">
           Smarter Commutes.
           <span className="text-[#2F5EEA] block sm:inline"> {" "} Built on Community.</span>
         </h2>
