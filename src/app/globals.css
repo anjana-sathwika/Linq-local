@@ -10,11 +10,11 @@
   --font-sans: var(--font-sora);
 }
 
-/* Dark mode */
+/* 🔴 FIX: prevent phone dark mode from turning site black */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
   }
 }
 
@@ -28,7 +28,7 @@ body,
 }
 
 body {
-  background: var(--background);
+  background: #ffffff !important; /* 🔴 FORCE WHITE BACKGROUND */
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial;
@@ -64,7 +64,7 @@ input[type="submit"] {
 }
 
 /* ===============================
-   INSTAGRAM ICON FUN ANIMATION
+   INSTAGRAM ICON ANIMATION
 ================================*/
 @keyframes insta-flip-dance {
   0% { transform: rotateY(0deg) scale(1); }
@@ -85,7 +85,6 @@ input[type="submit"] {
   will-change: transform;
 }
 
-/* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   .animate-insta-flip {
     animation: none !important;
@@ -105,7 +104,6 @@ input[type="submit"] {
   animation: cardPop 560ms cubic-bezier(.22,.9,.32,1) both;
 }
 
-/* Hover */
 .card-appeal {
   transition: transform 420ms cubic-bezier(.22,.9,.32,1),
               box-shadow 420ms ease,
@@ -212,21 +210,7 @@ input[type="submit"] {
 }
 
 /* ===============================
-   TILT SUPPORT
-================================*/
-.tilt {
-  transform-style: preserve-3d;
-  perspective: 800px;
-}
-
-.tilt-inner {
-  transition: transform 300ms cubic-bezier(.22,.9,.32,1);
-  transform-origin: center;
-  will-change: transform;
-}
-
-/* ===============================
-   PARALLAX ACCENTS (hidden mobile)
+   PARALLAX ACCENTS
 ================================*/
 .parallax-accent {
   position: absolute;
