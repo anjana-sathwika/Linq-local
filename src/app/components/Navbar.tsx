@@ -36,22 +36,22 @@ export default function Navbar({ refs }: NavbarProps) {
           : "bg-transparent max-w-full left-0 mt-0 translate-y-0"
       }`}
     >
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-3 relative">
+      <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-3">
 
-        {/* LOGO */}
-        <div className="flex items-center h-9 md:h-10">
+        {/* LOGO — aligned with nav text */}
+        <div className="flex items-center">
           <Image
             src="/logo.png"
             alt="LinQ Logo"
-            width={140}
-            height={32}
-            className="h-7 md:h-8 w-auto object-contain select-none"
+            width={120}
+            height={28}
+            className="h-6 md:h-7 w-auto object-contain select-none"
             priority
           />
         </div>
 
         {/* DESKTOP MENU */}
-        <ul className="hidden md:flex gap-10 lg:gap-14 ml-6 font-medium text-gray-700">
+        <ul className="hidden md:flex items-center gap-10 lg:gap-14 ml-6 font-medium text-gray-700">
           <li
             className="hover:text-[#2F5EEA] cursor-pointer transition"
             onClick={() => scrollToSection(refs.home)}
