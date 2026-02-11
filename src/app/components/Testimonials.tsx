@@ -25,8 +25,7 @@ export default function Testimonials() {
       instaLink: "https://www.instagram.com/p/DPQWyRDEQD6/",
     },
     {
-      quote:
-        "Safe rides and great vibes. Can’t wait to ride again!",
+      quote: "Safe rides and great vibes. Can’t wait to ride again!",
       instaLink: "https://www.instagram.com/p/DPN2noEkQaJ/",
     },
   ];
@@ -37,11 +36,14 @@ export default function Testimonials() {
     let x = 0;
     let raf: number;
     let paused = false;
+    let isDragging = false;
+    let startX = 0;
 
-    const speed = window.innerWidth < 640 ? 0.22 : 0.35;
+    /* 🔥 speed control */
+    const speed = window.innerWidth < 640 ? 0.45 : 0.35;
 
     const animate = () => {
-      if (!paused && rowRef.current) {
+      if (!paused && !isDragging && rowRef.current) {
         const width = rowRef.current.scrollWidth / 2;
 
         x -= speed;
@@ -55,13 +57,50 @@ export default function Testimonials() {
 
     raf = requestAnimationFrame(animate);
 
-    const pause = () => (paused = true);
-    const resume = () => (paused = false);
+    /* ================= DRAG ================= */
 
-    rowRef.current?.addEventListener("mouseenter", pause);
-    rowRef.current?.addEventListener("mouseleave", resume);
-    rowRef.current?.addEventListener("touchstart", pause);
-    rowRef.current?.addEventListener("touchend", resume);
+    const onStart = (clientX: number) => {
+      isDragging = true;
+      paused = true;
+      startX = clientX;
+    };
+
+    const onMove = (clientX: number) => {
+      if (!isDragging || !rowRef.current) return;
+
+      const dx = clientX - startX;
+      startX = clientX;
+      x += dx;
+
+      rowRef.current.style.transform = `translateX(${x}px)`;
+    };
+
+    const onEnd = () => {
+      isDragging = false;
+      paused = false;
+    };
+
+    /* Touch */
+    rowRef.current?.addEventListener("touchstart", (e) =>
+      onStart(e.touches[0].clientX)
+    );
+    rowRef.current?.addEventListener("touchmove", (e) =>
+      onMove(e.touches[0].clientX)
+    );
+    rowRef.current?.addEventListener("touchend", onEnd);
+
+    /* Mouse */
+    rowRef.current?.addEventListener("mousedown", (e) =>
+      onStart(e.clientX)
+    );
+    window.addEventListener("mousemove", (e) =>
+      onMove(e.clientX)
+    );
+    window.addEventListener("mouseup", onEnd);
+
+    /* Pause on hover */
+    rowRef.current?.addEventListener("mouseenter", () => (paused = true));
+    rowRef.current?.addEventListener("mouseleave", () => (paused = false));
 
     return () => cancelAnimationFrame(raf);
   }, []);
@@ -69,12 +108,12 @@ export default function Testimonials() {
   const cards = [...testimonials, ...testimonials];
 
   return (
-    <section className="py-20 md:py-28 bg-[#F7F9FF] overflow-hidden">
-      <div className="text-center mb-12 px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+    <section className="py-16 md:py-24 bg-[#F7F9FF] overflow-hidden">
+      <div className="text-center mb-10 px-4">
+        <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
           Loved by our community
         </h2>
-        <p className="text-gray-500 mt-2">
+        <p className="text-gray-500 mt-2 text-sm md:text-base">
           Real stories from LinQ commuters
         </p>
       </div>
@@ -82,7 +121,10 @@ export default function Testimonials() {
       <div className="overflow-hidden">
         <div
           ref={rowRef}
-          className="flex gap-5 md:gap-8 w-max will-change-transform px-4"
+          className="
+            flex gap-4 md:gap-8 w-max will-change-transform px-4
+            select-none cursor-grab active:cursor-grabbing
+          "
         >
           {cards.map((t, i) => (
             <a
@@ -91,28 +133,20 @@ export default function Testimonials() {
               target="_blank"
               rel="noopener noreferrer"
               className="
-                min-w-[240px] sm:min-w-[280px] md:min-w-[320px]
+                min-w-[220px] sm:min-w-[260px] md:min-w-[320px]
                 bg-white rounded-3xl p-6 md:p-7
                 border border-gray-200
                 shadow-sm hover:shadow-xl
                 transition-all duration-300
               "
             >
-              {/* icon */}
               <div className="flex justify-center mb-4">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center">
                   <span className="text-white text-xs font-bold">IG</span>
                 </div>
               </div>
 
-              {/* TEXT → forced 2-3 lines */}
-              <p className="
-                text-gray-700 text-center
-                text-sm md:text-base
-                leading-relaxed
-                max-w-[220px] md:max-w-[260px]
-                mx-auto
-              ">
+              <p className="text-gray-700 text-center text-sm md:text-base leading-relaxed max-w-[240px] mx-auto">
                 “{t.quote}”
               </p>
             </a>
