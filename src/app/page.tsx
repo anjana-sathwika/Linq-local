@@ -2,7 +2,6 @@
 import { useRef } from "react";
 import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
-import CareersCTA from "./components/CareersCTA";
 import Footer from "./components/Footer";
 import Testimonials from "./components/Testimonials";
 import SearchListings from "./components/SearchListings";
@@ -28,18 +27,17 @@ export default function Home() {
         <Hero />
       </div>
 
-      {/* SEARCH + LISTINGS */}
+      {/* SEARCH */}
       <section className="scroll-mt-24">
         <SearchListings />
       </section>
 
-      {/* MERGED SECTION */}
+      {/* WHY LINQ */}
       <div ref={whyRef}>
         <WhyLinq />
       </div>
 
       <Testimonials />
-      <CareersCTA />
 
       {/* FOOTER */}
       <div ref={footerRef}>
