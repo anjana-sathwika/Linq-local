@@ -35,11 +35,15 @@ export default function Testimonials() {
   const row2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const prefersReduced =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReduced) return;
+
     let x1 = 0;
     let x2 = 0;
-    const speed = 0.35;
+    const speed = 0.25;
     let raf: number;
-
     let paused = false;
 
     const animate = () => {
@@ -74,25 +78,34 @@ export default function Testimonials() {
 
     r1?.addEventListener("touchstart", pause);
     r2?.addEventListener("touchstart", pause);
+    r1?.addEventListener("touchend", resume);
+    r2?.addEventListener("touchend", resume);
 
     return () => cancelAnimationFrame(raf);
   }, []);
 
   const renderCards = (arr: typeof testimonials) =>
-    [...arr, ...arr, ...arr].map((t, i) => (
+    [...arr, ...arr].map((t, i) => (
       <a
         key={i}
         href={t.instaLink}
         target="_blank"
-        className="min-w-[320px] sm:min-w-[380px] bg-white border rounded-3xl p-7 shadow-md hover:shadow-xl transition"
+        rel="noopener noreferrer"
+        className="
+          min-w-[260px] sm:min-w-[320px] md:min-w-[360px]
+          bg-white border border-gray-200
+          rounded-3xl p-6 md:p-7
+          shadow-sm hover:shadow-xl
+          transition-all duration-300
+        "
       >
         {/* Insta icon */}
         <div className="flex justify-center mb-5">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow">
+          <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
+              width="22"
+              height="22"
               viewBox="0 0 24 24"
               fill="white"
             >
@@ -101,7 +114,7 @@ export default function Testimonials() {
           </div>
         </div>
 
-        <p className="text-gray-700 text-center leading-relaxed">
+        <p className="text-gray-700 text-center text-sm md:text-base leading-relaxed">
           “{t.quote}”
         </p>
       </a>
@@ -110,8 +123,8 @@ export default function Testimonials() {
   const reversed = [...testimonials].reverse();
 
   return (
-    <section className="py-28 bg-white overflow-hidden">
-      <div className="text-center mb-16">
+    <section className="py-24 md:py-28 bg-white overflow-hidden">
+      <div className="text-center mb-14 px-4">
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
           What our riders say
         </h2>
@@ -121,10 +134,10 @@ export default function Testimonials() {
       </div>
 
       {/* ROW 1 */}
-      <div className="overflow-hidden mb-10">
+      <div className="overflow-hidden mb-8">
         <div
           ref={row1Ref}
-          className="flex gap-8 w-max will-change-transform"
+          className="flex gap-6 md:gap-8 w-max will-change-transform"
         >
           {renderCards(testimonials)}
         </div>
@@ -134,7 +147,7 @@ export default function Testimonials() {
       <div className="overflow-hidden">
         <div
           ref={row2Ref}
-          className="flex gap-8 w-max will-change-transform"
+          className="flex gap-6 md:gap-8 w-max will-change-transform"
         >
           {renderCards(reversed)}
         </div>
