@@ -13,12 +13,12 @@ interface NavbarProps {
   };
 }
 
-const Navbar: React.FC<NavbarProps> = ({ refs }) => {
+export default function Navbar({ refs }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -32,91 +32,88 @@ const Navbar: React.FC<NavbarProps> = ({ refs }) => {
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
         scrolled
-          ? "max-w-[92%] left-[4%] bg-white shadow rounded-[2.5rem] mt-4 translate-y-3 border border-gray-200"
-          : "bg-transparent max-w-full left-0 mt-0 translate-y-0"
+          ? "bg-white shadow-md border-b border-gray-200"
+          : "bg-transparent"
       }`}
     >
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-10 py-3 relative">
-        {/* Logo */}
-        <div className="flex items-center h-10">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 md:px-10 py-3">
+
+        {/* LOGO */}
+        <div className="flex items-center">
           <Image
             src="/logo.png"
             alt="LinQ Logo"
             width={140}
             height={32}
-            className="h-8 w-auto object-contain select-none"
+            className="h-7 md:h-8 w-auto"
             priority
           />
         </div>
 
-        {/* Desktop Menu */}
-        <ul className="hidden md:flex gap-14 ml-10 font-medium text-gray-700">
+        {/* DESKTOP MENU */}
+        <ul className="hidden md:flex gap-10 font-medium text-gray-700">
           <li
-            className="hover:text-[#2F5EEA] cursor-pointer"
+            className="hover:text-[#2F5EEA] cursor-pointer transition"
             onClick={() => scrollToSection(refs.home)}
           >
             Home
           </li>
 
           <li
-            className="hover:text-[#2F5EEA] cursor-pointer"
+            className="hover:text-[#2F5EEA] cursor-pointer transition"
             onClick={() => scrollToSection(refs.features)}
           >
             Features
           </li>
 
           <li
-            className="hover:text-[#2F5EEA] cursor-pointer"
+            className="hover:text-[#2F5EEA] cursor-pointer transition"
             onClick={() => scrollToSection(refs.footer)}
           >
             Careers
           </li>
         </ul>
 
-        {/* CTA */}
-        <div className="hidden md:flex items-center">
+        {/* DESKTOP CTA */}
+        <div className="hidden md:block">
           <Link href="/#search">
-            <button className="bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition">
-              FIND A RIDE PARTNER
+            <button className="bg-[#2F5EEA] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
+              Find a Ride
             </button>
           </Link>
         </div>
 
-        {/* Mobile button */}
-        <div className="md:hidden absolute right-8">
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 bg-[#5FA9FF]/20 rounded-full border border-[#2F5EEA]/30"
-          >
-            {menuOpen ? (
-              <X className="text-[#2F5EEA] w-6 h-6" />
-            ) : (
-              <Menu className="text-[#2F5EEA] w-6 h-6" />
-            )}
-          </button>
-        </div>
+        {/* MOBILE BUTTON */}
+        <button
+          className="md:hidden p-2 rounded-full border border-gray-200 bg-white shadow-sm"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? (
+            <X className="w-6 h-6 text-[#2F5EEA]" />
+          ) : (
+            <Menu className="w-6 h-6 text-[#2F5EEA]" />
+          )}
+        </button>
       </div>
 
-      {/* Mobile dropdown */}
+      {/* MOBILE DROPDOWN */}
       <div
         className={`md:hidden transition-all duration-300 overflow-hidden ${
-          menuOpen ? "max-h-64 opacity-100 py-4" : "max-h-0 opacity-0 py-0"
-        } mx-8 mb-4 bg-white border shadow rounded-2xl`}
+          menuOpen ? "max-h-80 opacity-100 py-4" : "max-h-0 opacity-0 py-0"
+        } bg-white border-t`}
       >
-        <ul className="flex flex-col items-center gap-4 font-medium text-gray-700">
+        <ul className="flex flex-col items-center gap-5 font-medium text-gray-700">
           <li onClick={() => scrollToSection(refs.home)}>Home</li>
           <li onClick={() => scrollToSection(refs.features)}>Features</li>
           <li onClick={() => scrollToSection(refs.footer)}>Careers</li>
 
           <Link href="/#search" onClick={() => setMenuOpen(false)}>
-            <button className="mt-2 bg-[#2F5EEA] text-white px-6 py-2 rounded-full">
-              FIND A RIDE PARTNER
+            <button className="bg-[#2F5EEA] text-white px-6 py-2 rounded-full">
+              Find a Ride
             </button>
           </Link>
         </ul>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
