@@ -22,13 +22,15 @@ export default function SearchListings() {
 
   useEffect(() => {
     async function fetchListings() {
-      const response = await fetch(
-        "https://sheetdb.io/api/v1/y6sm0l77x4p3n/search?status=active"
-      );
-      const data = await response.json();
-      setAllListings(data);
-      setResults(data);
-      setLoading(false);
+      try {
+        const response = await fetch("/api/listings"); // secure backend route
+        const data = await response.json();
+        setAllListings(data);
+        setResults(data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to load listings");
+      }
     }
 
     fetchListings();
@@ -80,23 +82,14 @@ export default function SearchListings() {
             </button>
           </Link>
 
-          {/* INSTAGRAM BUTTON */}
           <a
             href="https://www.instagram.com/gotogetherrides"
             target="_blank"
             className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
           >
-            {/* SVG INSTAGRAM ICON */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="white"
-            >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
               <path d="M7.75 2C4.678 2 2.25 4.428 2.25 7.5v9c0 3.072 2.428 5.5 5.5 5.5h8.5c3.072 0 5.5-2.428 5.5-5.5v-9c0-3.072-2.428-5.5-5.5-5.5h-8.5zm0 1.5h8.5c2.243 0 4 1.757 4 4v9c0 2.243-1.757 4-4 4h-8.5c-2.243 0-4-1.757-4-4v-9c0-2.243 1.757-4 4-4zm9.75 1.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 1.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7z"/>
             </svg>
-
             View on Insta
           </a>
         </div>
