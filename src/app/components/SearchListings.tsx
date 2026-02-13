@@ -31,7 +31,7 @@ export default function SearchListings() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // 🟢 LOAD DATA FROM ENV URL
+  // 🟢 LOAD PEOPLE FROM GOOGLE SHEET
   useEffect(() => {
     async function fetchListings() {
       try {
@@ -41,36 +41,51 @@ export default function SearchListings() {
         setResults(data);
         setLoading(false);
       } catch {
-        console.log("Failed loading listings");
+        console.log("Sheet load failed");
       }
     }
 
     fetchListings();
   }, []);
 
-  // 🔍 LOCATION SEARCH (INDIA + HYDERABAD)
+  // 🔍 LOCATION SEARCH (INDIA + HYDERABAD PRIORITY)
   async function searchLocation(value: string, type: "from" | "to") {
     if (value.length < 2) return;
 
-    const viewbox = "78.2311,17.6033,78.5911,17.2161";
+    try {
+      const viewbox = "78.2311,17.6033,78.5911,17.2161";
 
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${value}&format=json&countrycodes=in&limit=6&viewbox=${viewbox}`
-    );
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?` +
+          `q=${encodeURIComponent(value)}&` +
+          `format=json&` +
+          `countrycodes=in&` +
+          `limit=6&` +
+          `viewbox=${viewbox}&` +
+          `bounded=0`
+      );
 
-    let data = await res.json();
+      let data = await res.json();
 
-    data = data.sort((a: any, b: any) => {
-      const aHyd = a.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
-      const bHyd = b.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
-      return aHyd - bHyd;
-    });
+      // move Hyderabad results to top
+      data = data.sort((a: any, b: any) => {
+        const aHyd = a.display_name.toLowerCase().includes("hyderabad")
+          ? 0
+          : 1;
+        const bHyd = b.display_name.toLowerCase().includes("hyderabad")
+          ? 0
+          : 1;
+        return aHyd - bHyd;
+      });
 
-    if (type === "from") setFromSuggestions(data);
-    else setToSuggestions(data);
+      if (type === "from") setFromSuggestions(data);
+      else setToSuggestions(data);
+    } catch {
+      console.log("location search error");
+    }
   }
 
-  // 📏 DISTANCE
+  // 📏 DISTANCE CALC
   function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -86,15 +101,15 @@ export default function SearchListings() {
     return R * c;
   }
 
-  // 🔎 SEARCH
+  // 🔎 SEARCH BUTTON
   function handleSearch() {
     if (!fromCoords || !toCoords) {
-      alert("Select locations from suggestions");
+      alert("Please select locations from suggestions");
       return;
     }
 
     const filtered = allListings.filter((item) => {
-      if (!item.from_lat || !item.to_lat) return true; // fallback
+      if (!item.from_lat || !item.to_lat) return true;
 
       const d1 = getDistance(
         fromCoords.lat,
@@ -121,8 +136,10 @@ export default function SearchListings() {
   }
 
   return (
-    <section id="search" className="bg-gray-50 rounded-3xl p-6 md:p-10 mt-24">
-
+    <section
+      id="search"
+      className="bg-gray-50 rounded-3xl p-6 md:p-10 mt-24 scroll-mt-32"
+    >
       {/* CTA */}
       <div className="bg-[#2F5EEA]/10 border border-[#2F5EEA]/20 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row justify-between gap-4">
         <div>
@@ -146,7 +163,6 @@ export default function SearchListings() {
         <h3 className="text-xl font-bold mb-4">Search by route</h3>
 
         <div className="flex flex-col md:flex-row gap-4">
-
           {/* FROM */}
           <div className="relative w-full md:w-1/3">
             <input
@@ -215,12 +231,14 @@ export default function SearchListings() {
           >
             Search
           </button>
-
         </div>
       </div>
 
       {/* RESULTS */}
-      <div ref={resultsRef} className="bg-white rounded-2xl shadow-inner p-4 max-h-[500px] overflow-y-auto">
+      <div
+        ref={resultsRef}
+        className="bg-white rounded-2xl shadow-inner p-4 max-h-[500px] overflow-y-auto"
+      >
         {loading ? (
           <p className="text-center py-10">Loading…</p>
         ) : results.length > 0 ? (
@@ -230,7 +248,10 @@ export default function SearchListings() {
               const female = person.gender?.toLowerCase() === "female";
 
               return (
-                <div key={person.id} className="bg-gray-50 rounded-2xl p-6 flex justify-between">
+                <div
+                  key={person.id}
+                  className="bg-gray-50 rounded-2xl p-6 flex justify-between"
+                >
                   <div>
                     <div className="font-semibold">
                       {masked} {female ? "♀" : "♂"}
@@ -251,7 +272,7 @@ export default function SearchListings() {
           </div>
         ) : (
           <p className="text-center py-10 text-gray-500">
-            No matches found
+            No matches found nearby
           </p>
         )}
       </div>
