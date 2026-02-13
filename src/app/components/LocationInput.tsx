@@ -3,32 +3,32 @@
 import { useState } from "react";
 
 interface Props {
-  value: string;
-  setValue: (v: string) => void;
-  setCoords: (c: any) => void;
   placeholder: string;
+  onSelect: (coords: { lat: number; lon: number }) => void;
 }
 
-export default function LocationInput({
-  value,
-  setValue,
-  setCoords,
-  placeholder,
-}: Props) {
+export default function LocationInput({ placeholder, onSelect }: Props) {
+  const [value, setValue] = useState("");
   const [suggestions, setSuggestions] = useState<any[]>([]);
 
-  async function searchLocation(v: string) {
-    if (v.length < 2) return;
+  async function searchLocation(text: string) {
+    setValue(text);
 
-    const viewbox = "78.2311,17.6033,78.5911,17.2161"; // Hyderabad
+    if (text.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    // Hyderabad focus + India only
+    const viewbox = "78.2311,17.6033,78.5911,17.2161";
 
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?` +
-        `q=${encodeURIComponent(v)}&format=json&countrycodes=in&limit=5&viewbox=${viewbox}&bounded=0`
+      `https://nominatim.openstreetmap.org/search?q=${text}&format=json&countrycodes=in&limit=6&viewbox=${viewbox}&bounded=0`
     );
 
     let data = await res.json();
 
+    // Push Hyderabad results first
     data = data.sort((a: any, b: any) => {
       const aHyd = a.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
       const bHyd = b.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
@@ -42,12 +42,9 @@ export default function LocationInput({
     <div className="relative w-full md:w-1/3">
       <input
         value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-          searchLocation(e.target.value);
-        }}
+        onChange={(e) => searchLocation(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-3 border rounded-xl"
+        className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA]"
       />
 
       {suggestions.length > 0 && (
@@ -57,7 +54,7 @@ export default function LocationInput({
               key={i}
               onClick={() => {
                 setValue(s.display_name);
-                setCoords({ lat: s.lat, lon: s.lon });
+                onSelect({ lat: Number(s.lat), lon: Number(s.lon) });
                 setSuggestions([]);
               }}
               className="p-3 hover:bg-gray-100 cursor-pointer text-sm"
