@@ -1,17 +1,3 @@
-Here is the **full SearchListings.tsx code**
-✔ OpenStreetMap (free)
-✔ India-only search
-✔ Hyderabad-biased results
-✔ Autocomplete while typing
-✔ No API key needed
-✔ Works on mobile
-✔ Ready to paste
-
-Just replace your entire file with this.
-
----
-
-```tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -272,4 +258,3 @@ export default function SearchListings() {
     </section>
   );
 }
-```
