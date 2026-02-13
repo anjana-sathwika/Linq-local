@@ -17,9 +17,6 @@ interface Listing {
 }
 
 export default function SearchListings() {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-
   const [fromCoords, setFromCoords] = useState<any>(null);
   const [toCoords, setToCoords] = useState<any>(null);
 
@@ -29,48 +26,52 @@ export default function SearchListings() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // 🟢 LOAD FROM GOOGLE SHEET
+  // ===== LOAD DATA FROM SHEETDB =====
   useEffect(() => {
     async function fetchListings() {
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_SHEETDB_URL!);
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_SHEETDB_URL as string
+        );
         const data = await res.json();
+
         setAllListings(data);
         setResults(data);
         setLoading(false);
-      } catch {
-        console.log("sheet load failed");
+      } catch (err) {
+        console.log("Failed loading listings");
       }
     }
 
     fetchListings();
   }, []);
 
-  // 📏 DISTANCE
+  // ===== DISTANCE CALC =====
   function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
     const a =
-      Math.sin(dLat / 2) ** 2 +
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((lat1 * Math.PI) / 180) *
         Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) ** 2;
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
 
-  // 🔎 SEARCH
+  // ===== SEARCH =====
   function handleSearch() {
     if (!fromCoords || !toCoords) {
-      alert("Select locations from suggestions");
+      alert("Please select locations from suggestions");
       return;
     }
 
     const filtered = allListings.filter((item) => {
-      if (!item.from_lat || !item.to_lat) return true;
+      if (!item.from_lat || !item.to_lat) return false;
 
       const d1 = getDistance(
         fromCoords.lat,
@@ -86,7 +87,7 @@ export default function SearchListings() {
         Number(item.to_lng)
       );
 
-      return d1 < 5 && d2 < 5;
+      return d1 < 6 && d2 < 6;
     });
 
     setResults(filtered);
@@ -101,23 +102,56 @@ export default function SearchListings() {
       id="search"
       className="bg-gray-50 rounded-3xl p-6 md:p-10 mt-24 scroll-mt-32"
     >
-      {/* SEARCH BOX */}
+      {/* ===== TOP CTA BOX ===== */}
+      <div className="bg-[#2F5EEA]/10 border border-[#2F5EEA]/20 rounded-2xl p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+        <div>
+          <h2 className="text-lg font-semibold text-gray-800">
+            ✨ Share your details — we’ll match you shortly
+          </h2>
+          <p className="text-sm text-gray-600">
+            No searching needed. We’ll find the right ride.
+          </p>
+        </div>
+
+        {/* BUTTONS */}
+        <div className="flex flex-wrap gap-3">
+
+          {/* GIVE DETAILS */}
+          <Link href="/connect/new">
+            <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
+              Give your details directly
+            </button>
+          </Link>
+
+          {/* INSTAGRAM */}
+          <a
+            href="https://www.instagram.com/gotogetherrides/"
+            target="_blank"
+            className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
+          >
+            View us on Insta
+          </a>
+
+        </div>
+      </div>
+
+      {/* ===== SEARCH BOX ===== */}
       <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
-        <h3 className="text-xl font-bold mb-4">Search by route</h3>
+        <h3 className="text-xl font-bold text-gray-800 mb-4">
+          Search by route
+        </h3>
 
         <div className="flex flex-col md:flex-row gap-4">
+
           <LocationInput
-            value={from}
-            setValue={setFrom}
-            setCoords={setFromCoords}
             placeholder="From"
+            onSelect={(coords) => setFromCoords(coords)}
           />
 
           <LocationInput
-            value={to}
-            setValue={setTo}
-            setCoords={setToCoords}
             placeholder="To"
+            onSelect={(coords) => setToCoords(coords)}
           />
 
           <button
@@ -129,13 +163,13 @@ export default function SearchListings() {
         </div>
       </div>
 
-      {/* RESULTS */}
+      {/* ===== RESULTS ===== */}
       <div
         ref={resultsRef}
         className="bg-white rounded-2xl shadow-inner p-4 max-h-[500px] overflow-y-auto"
       >
         {loading ? (
-          <p className="text-center py-10">Loading…</p>
+          <p className="text-center py-10">Loading people…</p>
         ) : results.length > 0 ? (
           <div className="grid md:grid-cols-2 gap-6">
             {results.map((person) => {
@@ -167,7 +201,7 @@ export default function SearchListings() {
           </div>
         ) : (
           <p className="text-center py-10 text-gray-500">
-            No matches found nearby
+            No matches nearby
           </p>
         )}
       </div>
