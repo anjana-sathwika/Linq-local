@@ -31,34 +31,35 @@ export default function SearchListings() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // 🟢 LOAD DATA FROM ENV URL
   useEffect(() => {
     async function fetchListings() {
       try {
-        const res = await fetch("/api/listings");
+        const res = await fetch(process.env.NEXT_PUBLIC_SHEETDB_URL!);
         const data = await res.json();
         setAllListings(data);
         setResults(data);
         setLoading(false);
       } catch {
-        console.log("failed loading listings");
+        console.log("Failed loading listings");
       }
     }
+
     fetchListings();
   }, []);
 
-  // 🔍 LOCATION SEARCH (INDIA + HYDERABAD BIAS)
+  // 🔍 LOCATION SEARCH (INDIA + HYDERABAD)
   async function searchLocation(value: string, type: "from" | "to") {
     if (value.length < 2) return;
 
-    const viewbox = "78.2311,17.6033,78.5911,17.2161"; // Hyderabad box
+    const viewbox = "78.2311,17.6033,78.5911,17.2161";
 
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${value}&format=json&countrycodes=in&limit=6&viewbox=${viewbox}&bounded=0`
+      `https://nominatim.openstreetmap.org/search?q=${value}&format=json&countrycodes=in&limit=6&viewbox=${viewbox}`
     );
 
     let data = await res.json();
 
-    // push Hyderabad results to top
     data = data.sort((a: any, b: any) => {
       const aHyd = a.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
       const bHyd = b.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
@@ -69,18 +70,17 @@ export default function SearchListings() {
     else setToSuggestions(data);
   }
 
-  // 📏 DISTANCE FUNCTION
+  // 📏 DISTANCE
   function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
     const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLat / 2) ** 2 +
       Math.cos((lat1 * Math.PI) / 180) *
         Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+        Math.sin(dLon / 2) ** 2;
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
@@ -94,7 +94,7 @@ export default function SearchListings() {
     }
 
     const filtered = allListings.filter((item) => {
-      if (!item.from_lat || !item.to_lat) return false;
+      if (!item.from_lat || !item.to_lat) return true; // fallback
 
       const d1 = getDistance(
         fromCoords.lat,
@@ -110,7 +110,7 @@ export default function SearchListings() {
         Number(item.to_lng)
       );
 
-      return d1 < 5 && d2 < 5; // 5km match
+      return d1 < 5 && d2 < 5;
     });
 
     setResults(filtered);
@@ -121,7 +121,7 @@ export default function SearchListings() {
   }
 
   return (
-    <section id="search" className="bg-gray-50 rounded-3xl p-6 md:p-10 mt-24 scroll-mt-32">
+    <section id="search" className="bg-gray-50 rounded-3xl p-6 md:p-10 mt-24">
 
       {/* CTA */}
       <div className="bg-[#2F5EEA]/10 border border-[#2F5EEA]/20 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row justify-between gap-4">
@@ -143,7 +143,7 @@ export default function SearchListings() {
 
       {/* SEARCH */}
       <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Search by route</h3>
+        <h3 className="text-xl font-bold mb-4">Search by route</h3>
 
         <div className="flex flex-col md:flex-row gap-4">
 
@@ -251,7 +251,7 @@ export default function SearchListings() {
           </div>
         ) : (
           <p className="text-center py-10 text-gray-500">
-            No matches found nearby
+            No matches found
           </p>
         )}
       </div>
