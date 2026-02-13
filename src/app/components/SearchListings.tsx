@@ -9,48 +9,119 @@ interface Listing {
   gender: string;
   from: string;
   to: string;
+  from_lat?: number;
+  from_lng?: number;
+  to_lat?: number;
+  to_lng?: number;
 }
 
 export default function SearchListings() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+
+  const [fromSuggestions, setFromSuggestions] = useState<any[]>([]);
+  const [toSuggestions, setToSuggestions] = useState<any[]>([]);
+
+  const [fromCoords, setFromCoords] = useState<{ lat: number; lng: number }>();
+  const [toCoords, setToCoords] = useState<{ lat: number; lng: number }>();
+
   const [allListings, setAllListings] = useState<Listing[]>([]);
   const [results, setResults] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // ================= FETCH DATA =================
   useEffect(() => {
     async function fetchListings() {
       try {
-        const response = await fetch("/api/listings"); // secure backend route
-        const data = await response.json();
+        const res = await fetch("/api/listings");
+        const data = await res.json();
         setAllListings(data);
         setResults(data);
         setLoading(false);
       } catch (err) {
-        console.error("Failed to load listings");
+        console.log(err);
       }
     }
 
     fetchListings();
   }, []);
 
+  // ================= LOCATION SEARCH (OSM) =================
+  async function searchLocation(value: string, type: "from" | "to") {
+    if (value.length < 2) return;
+
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${value}&format=json&addressdetails=1`
+    );
+    const data = await res.json();
+
+    if (type === "from") setFromSuggestions(data);
+    else setToSuggestions(data);
+  }
+
+  function selectLocation(item: any, type: "from" | "to") {
+    const coords = {
+      lat: parseFloat(item.lat),
+      lng: parseFloat(item.lon),
+    };
+
+    if (type === "from") {
+      setFrom(item.display_name);
+      setFromCoords(coords);
+      setFromSuggestions([]);
+    } else {
+      setTo(item.display_name);
+      setToCoords(coords);
+      setToSuggestions([]);
+    }
+  }
+
+  // ================= DISTANCE CALC =================
+  function getDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  // ================= SEARCH =================
   function handleSearch() {
-    const searchFrom = from.toLowerCase().trim();
-    const searchTo = to.toLowerCase().trim();
+    let filtered = allListings;
 
-    const filtered = allListings.filter((item) => {
-      const fromMatch = searchFrom
-        ? item.from?.toLowerCase().includes(searchFrom)
-        : true;
+    if (fromCoords && toCoords) {
+      filtered = allListings.filter((item) => {
+        if (!item.from_lat || !item.from_lng) return false;
 
-      const toMatch = searchTo
-        ? item.to?.toLowerCase().includes(searchTo)
-        : true;
+        const dist = getDistance(
+          fromCoords.lat,
+          fromCoords.lng,
+          item.from_lat,
+          item.from_lng
+        );
 
-      return fromMatch && toMatch;
-    });
+        return dist < 5; // 5km match radius
+      });
+    } else {
+      const f = from.toLowerCase();
+      const t = to.toLowerCase();
+
+      filtered = allListings.filter(
+        (item) =>
+          item.from?.toLowerCase().includes(f) &&
+          item.to?.toLowerCase().includes(t)
+      );
+    }
 
     setResults(filtered);
 
@@ -59,68 +130,75 @@ export default function SearchListings() {
     }, 100);
   }
 
+  // ================= UI =================
   return (
     <section
       id="search"
       className="bg-gray-50 rounded-3xl p-6 md:p-10 mt-24 scroll-mt-32"
     >
-      {/* CTA */}
-      <div className="bg-[#2F5EEA]/10 border border-[#2F5EEA]/20 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-800">
-            ✨ Share your details — we’ll match you shortly
-          </h2>
-          <p className="text-sm text-gray-600">
-            No searching needed. We’ll find the right ride for you.
-          </p>
-        </div>
-
-        <div className="flex gap-3 flex-wrap">
-          <Link href="/connect/new">
-            <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
-              Give my details
-            </button>
-          </Link>
-
-          <a
-            href="https://www.instagram.com/gotogetherrides"
-            target="_blank"
-            className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-              <path d="M7.75 2C4.678 2 2.25 4.428 2.25 7.5v9c0 3.072 2.428 5.5 5.5 5.5h8.5c3.072 0 5.5-2.428 5.5-5.5v-9c0-3.072-2.428-5.5-5.5-5.5h-8.5zm0 1.5h8.5c2.243 0 4 1.757 4 4v9c0 2.243-1.757 4-4 4h-8.5c-2.243 0-4-1.757-4-4v-9c0-2.243 1.757-4 4-4zm9.75 1.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 1.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7z"/>
-            </svg>
-            View on Insta
-          </a>
-        </div>
-      </div>
-
-      {/* SEARCH */}
+      {/* SEARCH BOX */}
       <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">
-          Search by route
-        </h3>
+        <h3 className="text-xl font-bold mb-4">Search by route</h3>
 
-        <div className="flex flex-col md:flex-row gap-4">
-          <input
-            type="text"
-            placeholder="From"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            className="w-full md:w-1/3 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA]"
-          />
+        <div className="flex flex-col md:flex-row gap-4 relative">
 
-          <input
-            type="text"
-            placeholder="To"
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            className="w-full md:w-1/3 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA]"
-          />
+          {/* FROM */}
+          <div className="w-full md:w-1/3 relative">
+            <input
+              value={from}
+              onChange={(e) => {
+                setFrom(e.target.value);
+                searchLocation(e.target.value, "from");
+              }}
+              placeholder="From location"
+              className="w-full px-4 py-3 border rounded-xl"
+            />
+
+            {fromSuggestions.length > 0 && (
+              <div className="absolute bg-white border w-full z-20 max-h-60 overflow-y-auto">
+                {fromSuggestions.map((item, i) => (
+                  <div
+                    key={i}
+                    onClick={() => selectLocation(item, "from")}
+                    className="p-3 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {item.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* TO */}
+          <div className="w-full md:w-1/3 relative">
+            <input
+              value={to}
+              onChange={(e) => {
+                setTo(e.target.value);
+                searchLocation(e.target.value, "to");
+              }}
+              placeholder="To location"
+              className="w-full px-4 py-3 border rounded-xl"
+            />
+
+            {toSuggestions.length > 0 && (
+              <div className="absolute bg-white border w-full z-20 max-h-60 overflow-y-auto">
+                {toSuggestions.map((item, i) => (
+                  <div
+                    key={i}
+                    onClick={() => selectLocation(item, "to")}
+                    className="p-3 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {item.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <button
             onClick={handleSearch}
-            className="bg-[#2F5EEA] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#1E3FAE] transition"
+            className="bg-[#2F5EEA] text-white px-6 py-3 rounded-xl"
           >
             Search
           </button>
@@ -130,42 +208,29 @@ export default function SearchListings() {
       {/* RESULTS */}
       <div
         ref={resultsRef}
-        className="bg-white rounded-2xl shadow-inner p-4 max-h-[500px] overflow-y-auto"
+        className="bg-white rounded-2xl p-4 max-h-[500px] overflow-y-auto"
       >
         {loading ? (
-          <p className="text-center text-gray-500 py-10">Loading people…</p>
+          <p className="text-center py-10">Loading…</p>
         ) : results.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {results.map((person) => {
               const maskedName = person.name?.slice(0, 3) + "***";
-              const isFemale = person.gender?.toLowerCase() === "female";
 
               return (
                 <div
                   key={person.id}
-                  className="bg-gray-50 rounded-2xl shadow-sm p-6 flex items-center justify-between"
+                  className="bg-gray-50 rounded-2xl p-6 flex justify-between"
                 >
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-gray-800">
-                        {maskedName}
-                      </span>
-                      <span
-                        className={`text-lg ${
-                          isFemale ? "text-pink-400" : "text-[#3256B5]"
-                        }`}
-                      >
-                        {isFemale ? "♀" : "♂"}
-                      </span>
-                    </div>
-
+                    <div className="font-semibold">{maskedName}</div>
                     <div className="text-sm text-gray-500">
                       {person.from} → {person.to}
                     </div>
                   </div>
 
                   <Link href={`/connect/${person.id}`}>
-                    <button className="bg-[#3256B5] text-white px-4 py-2 rounded-full font-medium hover:opacity-90 transition">
+                    <button className="bg-[#3256B5] text-white px-4 py-2 rounded-full">
                       Connect
                     </button>
                   </Link>
@@ -174,9 +239,7 @@ export default function SearchListings() {
             })}
           </div>
         ) : (
-          <p className="text-center text-gray-500 py-10">
-            No matches found yet.
-          </p>
+          <p className="text-center py-10">No matches found</p>
         )}
       </div>
     </section>
