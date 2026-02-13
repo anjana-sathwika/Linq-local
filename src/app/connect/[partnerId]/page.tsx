@@ -7,6 +7,8 @@ import Link from "next/link";
 export default function ConnectPage() {
   const { partnerId } = useParams();
 
+  const [submitting, setSubmitting] = useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -17,14 +19,18 @@ export default function ConnectPage() {
     seats: "",
     from: "",
     to: "",
+    from_lat: "",
+    from_lng: "",
+    to_lat: "",
+    to_lng: "",
     morning_time: "",
     evening_connect: "",
     evening_time: "",
     message: ""
   });
 
-  // 🔒 prevent multiple submits
-  const [submitting, setSubmitting] = useState(false);
+  const [fromSuggestions, setFromSuggestions] = useState<any[]>([]);
+  const [toSuggestions, setToSuggestions] = useState<any[]>([]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -32,8 +38,30 @@ export default function ConnectPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
+  // 🔍 LOCATION SEARCH (INDIA + HYDERABAD BIAS)
+  async function searchLocation(value: string, type: "from" | "to") {
+    if (value.length < 2) return;
+
+    const viewbox = "78.2311,17.6033,78.5911,17.2161"; // Hyderabad box
+
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${value}&format=json&countrycodes=in&limit=6&viewbox=${viewbox}`
+    );
+
+    let data = await res.json();
+
+    data = data.sort((a: any, b: any) => {
+      const aHyd = a.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
+      const bHyd = b.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
+      return aHyd - bHyd;
+    });
+
+    if (type === "from") setFromSuggestions(data);
+    else setToSuggestions(data);
+  }
+
   async function handleSubmit() {
-    if (submitting) return; // ⛔ stop duplicate clicks
+    if (submitting) return;
     setSubmitting(true);
 
     const payload = {
@@ -50,13 +78,13 @@ export default function ConnectPage() {
       });
 
       const whatsappMessage = encodeURIComponent(
-        `Hi LinQ 👋\n\nI want to connect with Partner ID: ${partnerId}\n\nMy details have been submitted on the website.\nPlease guide me further.`
+        `Hi LinQ 👋\n\nI want to connect with Partner ID: ${partnerId}\n\nMy details submitted on website.`
       );
 
       window.location.href = `https://wa.me/9494823941?text=${whatsappMessage}`;
-    } catch (err) {
-      alert("Something went wrong. Please try again.");
-      setSubmitting(false); // allow retry if error
+    } catch {
+      alert("Something went wrong");
+      setSubmitting(false);
     }
   }
 
@@ -64,65 +92,97 @@ export default function ConnectPage() {
     <main className="min-h-screen bg-gray-50 px-6 md:px-12 pt-28 pb-20">
       <div className="max-w-3xl mx-auto">
 
-        {/* 🔙 Back Button */}
-        <div className="mb-6">
-          <Link
-            href="/search"
-            className="text-sm text-gray-600 hover:text-[#2F5EEA]"
-          >
-            ← Back to search
-          </Link>
-        </div>
+        <Link href="/" className="text-sm text-gray-600">
+          ← Back
+        </Link>
 
-        <div className="bg-white rounded-2xl shadow-md p-6 md:p-8">
-          <h1 className="text-2xl font-bold mb-2 text-gray-800">
-            Share your details
-          </h1>
-          <p className="text-gray-500 mb-6">
-            We’ll connect you with the right partner securely.
-          </p>
+        <div className="bg-white rounded-2xl shadow-md p-6 mt-6">
+          <h1 className="text-2xl font-bold mb-4">Share your details</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
             <input name="name" placeholder="Full Name" onChange={handleChange} className="input" />
-            <input name="email" placeholder="Email" onChange={handleChange} className="input" />
             <input name="phone" placeholder="Phone" onChange={handleChange} className="input" />
 
-            <select name="gender" onChange={handleChange} className="input">
-              <option value="">Gender</option>
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-              <option value="other">Other</option>
-            </select>
+            {/* FROM */}
+            <div className="relative">
+              <input
+                name="from"
+                placeholder="From"
+                value={form.from}
+                onChange={(e) => {
+                  handleChange(e);
+                  searchLocation(e.target.value, "from");
+                }}
+                className="input"
+              />
 
-            <select name="has_vehicle" onChange={handleChange} className="input">
-              <option value="">Do you have a vehicle?</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
+              {fromSuggestions.length > 0 && (
+                <div className="absolute bg-white border rounded-xl mt-1 w-full z-50 max-h-60 overflow-y-auto">
+                  {fromSuggestions.map((s: any, i: number) => (
+                    <div
+                      key={i}
+                      onClick={() => {
+                        setForm({
+                          ...form,
+                          from: s.display_name,
+                          from_lat: s.lat,
+                          from_lng: s.lon
+                        });
+                        setFromSuggestions([]);
+                      }}
+                      className="p-3 hover:bg-gray-100 cursor-pointer text-sm"
+                    >
+                      {s.display_name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
-            <select name="vehicle_type" onChange={handleChange} className="input">
-              <option value="">Vehicle Type</option>
-              <option value="car">Car</option>
-              <option value="bike">Bike</option>
-            </select>
+            {/* TO */}
+            <div className="relative">
+              <input
+                name="to"
+                placeholder="To"
+                value={form.to}
+                onChange={(e) => {
+                  handleChange(e);
+                  searchLocation(e.target.value, "to");
+                }}
+                className="input"
+              />
 
-            <input name="seats" placeholder="Seats needed / available" onChange={handleChange} className="input" />
-            <input name="from" placeholder="From" onChange={handleChange} className="input" />
-            <input name="to" placeholder="To" onChange={handleChange} className="input" />
+              {toSuggestions.length > 0 && (
+                <div className="absolute bg-white border rounded-xl mt-1 w-full z-50 max-h-60 overflow-y-auto">
+                  {toSuggestions.map((s: any, i: number) => (
+                    <div
+                      key={i}
+                      onClick={() => {
+                        setForm({
+                          ...form,
+                          to: s.display_name,
+                          to_lat: s.lat,
+                          to_lng: s.lon
+                        });
+                        setToSuggestions([]);
+                      }}
+                      className="p-3 hover:bg-gray-100 cursor-pointer text-sm"
+                    >
+                      {s.display_name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <input name="morning_time" placeholder="Morning time" onChange={handleChange} className="input" />
 
-            <select name="evening_connect" onChange={handleChange} className="input">
-              <option value="">Connect in evening?</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
-
-            <input name="evening_time" placeholder="Evening time" onChange={handleChange} className="input" />
           </div>
 
           <textarea
             name="message"
-            placeholder="Message for partner"
+            placeholder="Message"
             onChange={handleChange}
             className="input mt-4 h-24"
           />
@@ -130,11 +190,7 @@ export default function ConnectPage() {
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className={`mt-6 w-full py-3 rounded-xl font-semibold transition ${
-              submitting
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#2F5EEA] text-white hover:bg-[#1E3FAE]"
-            }`}
+            className="mt-6 w-full bg-[#2F5EEA] text-white py-3 rounded-xl font-semibold"
           >
             {submitting ? "Submitting..." : "Submit & Continue on WhatsApp"}
           </button>
