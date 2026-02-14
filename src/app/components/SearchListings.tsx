@@ -72,6 +72,12 @@ export default function SearchListings() {
     return R * c;
   }
 
+  // ===== HELPER FUNCTIONS =====
+  function shortLocation(address: string) {
+    if (!address) return "";
+    return address.split(",")[0];
+  }
+
   // ===== SEARCH =====
   function handleSearch() {
     if (!fromCoords || !toCoords) {
@@ -213,7 +219,9 @@ export default function SearchListings() {
                       {masked} {female ? "♀" : "♂"}
                     </div>
                     <div className="text-sm text-gray-500">
-                      {person.from} → {person.to}
+                      <span className="font-medium max-w-[180px] truncate inline-block">
+                        {shortLocation(person.from)} → {shortLocation(person.to)}
+                      </span>
                     </div>
                   </div>
 
