@@ -4,6 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import LocationInput from "./LocationInput";
 
+interface Coordinates {
+  lat: number;
+  lon: number;
+}
+
 interface Listing {
   id: string;
   name: string;
@@ -17,12 +22,14 @@ interface Listing {
 }
 
 export default function SearchListings() {
-  const [fromCoords, setFromCoords] = useState<any>(null);
-  const [toCoords, setToCoords] = useState<any>(null);
+  const [fromCoords, setFromCoords] = useState<Coordinates | null>(null);
+  const [toCoords, setToCoords] = useState<Coordinates | null>(null);
 
   const [allListings, setAllListings] = useState<Listing[]>([]);
   const [results, setResults] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searching, setSearching] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +46,9 @@ export default function SearchListings() {
         setResults(data);
         setLoading(false);
       } catch (err) {
-        console.log("Failed loading listings");
+        console.error("Failed loading listings:", err);
+        setError("Failed to load listings. Please try again.");
+        setLoading(false);
       }
     }
 
@@ -66,9 +75,12 @@ export default function SearchListings() {
   // ===== SEARCH =====
   function handleSearch() {
     if (!fromCoords || !toCoords) {
-      alert("Please select locations from suggestions");
+      setError("Please select locations from suggestions");
       return;
     }
+
+    setSearching(true);
+    setError(null);
 
     const filtered = allListings.filter((item) => {
       if (!item.from_lat || !item.to_lat) return false;
@@ -91,6 +103,7 @@ export default function SearchListings() {
     });
 
     setResults(filtered);
+    setSearching(false);
 
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -142,23 +155,35 @@ export default function SearchListings() {
           Search by route
         </h3>
 
-        <div className="flex flex-col md:flex-row gap-4">
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
 
+        <div className="flex flex-col md:flex-row gap-4">
           <LocationInput
             placeholder="From"
-            onSelect={(coords) => setFromCoords(coords)}
+            onSelect={(coords) => {
+              setFromCoords(coords);
+              setError(null);
+            }}
           />
 
           <LocationInput
             placeholder="To"
-            onSelect={(coords) => setToCoords(coords)}
+            onSelect={(coords) => {
+              setToCoords(coords);
+              setError(null);
+            }}
           />
 
           <button
             onClick={handleSearch}
-            className="bg-[#2F5EEA] text-white px-6 py-3 rounded-xl font-semibold"
+            disabled={searching}
+            className="bg-[#2F5EEA] text-white px-6 py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#1E3FAE] transition"
           >
-            Search
+            {searching ? "Searching..." : "Search"}
           </button>
         </div>
       </div>
@@ -170,6 +195,8 @@ export default function SearchListings() {
       >
         {loading ? (
           <p className="text-center py-10">Loading people…</p>
+        ) : error && !loading ? (
+          <p className="text-center py-10 text-red-500">{error}</p>
         ) : results.length > 0 ? (
           <div className="grid md:grid-cols-2 gap-6">
             {results.map((person) => {
@@ -191,7 +218,7 @@ export default function SearchListings() {
                   </div>
 
                   <Link href={`/connect/${person.id}`}>
-                    <button className="bg-[#3256B5] text-white px-4 py-2 rounded-full">
+                    <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition">
                       Connect
                     </button>
                   </Link>

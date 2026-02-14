@@ -9,6 +9,7 @@ interface NavbarProps {
   refs: {
     home: React.RefObject<HTMLDivElement | null>;
     features: React.RefObject<HTMLDivElement | null>;
+    career: React.RefObject<HTMLDivElement | null>;
     footer: React.RefObject<HTMLDivElement | null>;
   };
 }
@@ -68,7 +69,7 @@ export default function Navbar({ refs }: NavbarProps) {
 
           <li
             className="hover:text-[#2F5EEA] cursor-pointer transition"
-            onClick={() => scrollToSection(refs.footer)}
+            onClick={() => scrollToSection(refs.career)}
           >
             Careers
           </li>
@@ -107,7 +108,7 @@ export default function Navbar({ refs }: NavbarProps) {
         <ul className="flex flex-col items-center gap-5 font-medium text-gray-700 text-base">
           <li onClick={() => scrollToSection(refs.home)}>Home</li>
           <li onClick={() => scrollToSection(refs.features)}>Features</li>
-          <li onClick={() => scrollToSection(refs.footer)}>Careers</li>
+          <li onClick={() => scrollToSection(refs.career)}>Careers</li>
 
           <Link href="/#search" onClick={() => setMenuOpen(false)}>
             <button className="bg-[#2F5EEA] text-white px-6 py-2 rounded-full text-sm">

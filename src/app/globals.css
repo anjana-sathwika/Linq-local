@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Asimovian&display=swap');
+
 @import "tailwindcss";
 
 /* Google fonts */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Asimovian&display=swap');
 
 :root {
   --background: #ffffff;

@@ -1,6 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import React from "react";
+
+interface Suggestion {
+  display_name: string;
+  lat: string;
+  lon: string;
+}
 
 interface Props {
   placeholder: string;
@@ -9,7 +16,7 @@ interface Props {
 
 export default function LocationInput({ placeholder, onSelect }: Props) {
   const [value, setValue] = useState("");
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
   async function searchLocation(text: string) {
     setValue(text);
@@ -29,7 +36,7 @@ export default function LocationInput({ placeholder, onSelect }: Props) {
     let data = await res.json();
 
     // Push Hyderabad results first
-    data = data.sort((a: any, b: any) => {
+    data = data.sort((a: Suggestion, b: Suggestion) => {
       const aHyd = a.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
       const bHyd = b.display_name.toLowerCase().includes("hyderabad") ? 0 : 1;
       return aHyd - bHyd;
@@ -42,14 +49,14 @@ export default function LocationInput({ placeholder, onSelect }: Props) {
     <div className="relative w-full md:w-1/3">
       <input
         value={value}
-        onChange={(e) => searchLocation(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchLocation(e.target.value)}
         placeholder={placeholder}
         className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA]"
       />
 
       {suggestions.length > 0 && (
         <div className="absolute bg-white border rounded-xl mt-1 w-full z-50 max-h-60 overflow-y-auto">
-          {suggestions.map((s: any, i: number) => (
+          {suggestions.map((s: Suggestion, i: number) => (
             <div
               key={i}
               onClick={() => {
