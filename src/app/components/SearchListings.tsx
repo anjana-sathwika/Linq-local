@@ -33,6 +33,7 @@ export default function SearchListings() {
   const [error, setError] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [manualSearch, setManualSearch] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -130,12 +131,17 @@ export default function SearchListings() {
     setResults(filtered);
     setSearching(false);
 
-    setTimeout(() => {
-      resultsRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+    // Only scroll when manual search button is clicked
+    if (manualSearch) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+      setManualSearch(false);
+    }
   }
 
   function handleSearch() {
+    setManualSearch(true);
     performSearch();
   }
 
@@ -282,11 +288,8 @@ export default function SearchListings() {
             {/* Apology message card */}
             <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 text-center mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                Sorry, we don't have people travelling in this direction yet.
+                If exact locations don't match, please give your details directly — we'll match you shortly.
               </h3>
-              <p className="text-gray-600 mb-6">
-                Please share your details — we'll match you shortly.
-              </p>
               <Link href="/connect/new">
                 <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
                   Give your details directly
