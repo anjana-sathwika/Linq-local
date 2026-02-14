@@ -336,13 +336,6 @@ export default function SearchListings() {
               })}
             </div>
 
-            {/* All remaining users */}
-            <div>
-              <h3 className="text-center text-lg font-semibold text-gray-800 mb-4">
-                All remaining users
-              </h3>
-            </div>
-
             {/* All listings grid */}
             <div className="grid md:grid-cols-2 gap-6">
               {allListings
