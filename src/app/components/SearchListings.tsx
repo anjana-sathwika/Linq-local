@@ -33,7 +33,7 @@ export default function SearchListings() {
   const [error, setError] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [manualSearch, setManualSearch] = useState(false);
+  const [searchPressed, setSearchPressed] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -131,17 +131,17 @@ export default function SearchListings() {
     setResults(filtered);
     setSearching(false);
 
-    // Only scroll when manual search button is clicked
-    if (manualSearch) {
+    // Only scroll when search button is pressed
+    if (searchPressed) {
       setTimeout(() => {
         resultsRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
-      setManualSearch(false);
+      setSearchPressed(false);
     }
   }
 
   function handleSearch() {
-    setManualSearch(true);
+    setSearchPressed(true);
     performSearch();
   }
 
@@ -283,13 +283,13 @@ export default function SearchListings() {
               );
             })}
           </div>
-        ) : hasSearched && (fromText || toText) ? (
+        ) : searchPressed && (fromText || toText) ? (
           <div>
-            {/* Apology message card */}
-            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 text-center mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                If exact locations don't match, please give your details directly — we'll match you shortly.
-              </h3>
+            {/* Message + button */}
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center mb-8">
+              <p className="text-gray-800 mb-4">
+                If exact matches aren't found, please give your details directly — we'll match you shortly.
+              </p>
               <Link href="/connect/new">
                 <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
                   Give your details directly
@@ -297,14 +297,16 @@ export default function SearchListings() {
               </Link>
             </div>
 
-            {/* Divider text */}
-            <div className="text-center mb-6">
-              <p className="text-gray-500 text-sm font-medium">You can still explore other travellers</p>
+            {/* Exact / nearby matches */}
+            <div className="mb-6">
+              <h3 className="text-center text-lg font-semibold text-gray-800 mb-4">
+                Exact / nearby matches
+              </h3>
             </div>
 
-            {/* All listings grid */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {allListings.map((person) => {
+            {/* Matched users grid */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {results.map((person) => {
                 const masked = person.name?.slice(0, 3) + "***";
                 const female = person.gender?.toLowerCase() === "female";
 
@@ -332,6 +334,47 @@ export default function SearchListings() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* All remaining users */}
+            <div>
+              <h3 className="text-center text-lg font-semibold text-gray-800 mb-4">
+                All remaining users
+              </h3>
+            </div>
+
+            {/* All listings grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {allListings
+                .filter(person => !results.find(result => result.id === person.id))
+                .map((person) => {
+                  const masked = person.name?.slice(0, 3) + "***";
+                  const female = person.gender?.toLowerCase() === "female";
+
+                  return (
+                    <div
+                      key={person.id}
+                      className="bg-gray-50 rounded-2xl p-6 flex justify-between"
+                    >
+                      <div>
+                        <div className="font-semibold">
+                          {masked} {female ? "♀" : "♂"}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          <span className="font-medium max-w-[180px] truncate inline-block">
+                            {shortLocation(person.from)} → {shortLocation(person.to)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Link href={`/connect/${person.id}`}>
+                        <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition">
+                          Connect
+                        </button>
+                        </Link>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         ) : (
