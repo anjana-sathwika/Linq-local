@@ -283,28 +283,23 @@ export default function SearchListings() {
               );
             })}
           </div>
-        ) : searchPressed && (fromText || toText) ? (
+        ) : (fromText || toText) ? (
           <div>
             {/* Message + button */}
-            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center mb-8">
-              <p className="text-gray-800 mb-4">
-                If exact matches aren't found, please give your details directly — we'll match you shortly.
-              </p>
-              <Link href="/connect/new">
-                <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
-                  Give your details directly
-                </button>
-              </Link>
-            </div>
+            {(results.length === 0 && searchPressed) ? (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center mb-8">
+                <p className="text-gray-800 mb-4">
+                  If exact matches aren't found, please give your details directly — we'll match you shortly.
+                </p>
+                <Link href="/connect/new">
+                  <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
+                    Give your details directly
+                  </button>
+                </Link>
+              </div>
+            ) : null}
 
-            {/* Exact / nearby matches */}
-            <div className="mb-6">
-              <h3 className="text-center text-lg font-semibold text-gray-800 mb-4">
-                Exact / nearby matches
-              </h3>
-            </div>
-
-            {/* Matched users grid */}
+            {/* Matched users first */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               {results.map((person) => {
                 const masked = person.name?.slice(0, 3) + "***";
