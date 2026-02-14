@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import React from "react";
+import { X } from "lucide-react";
 
 interface Suggestion {
   display_name: string;
@@ -11,15 +12,17 @@ interface Suggestion {
 
 interface Props {
   placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
   onSelect: (coords: { lat: number; lon: number }) => void;
+  onClear?: () => void;
 }
 
-export default function LocationInput({ placeholder, onSelect }: Props) {
-  const [value, setValue] = useState("");
+export default function LocationInput({ placeholder, value, onChange, onSelect, onClear }: Props) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
   async function searchLocation(text: string) {
-    setValue(text);
+    onChange(text);
 
     if (text.length < 2) {
       setSuggestions([]);
@@ -45,14 +48,31 @@ export default function LocationInput({ placeholder, onSelect }: Props) {
     setSuggestions(data);
   }
 
+  function handleClear() {
+    onChange("");
+    setSuggestions([]);
+    onClear?.();
+  }
+
   return (
     <div className="relative w-full md:w-1/3">
-      <input
-        value={value}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchLocation(e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA]"
-      />
+      <div className="relative">
+        <input
+          value={value}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => searchLocation(e.target.value)}
+          placeholder={placeholder}
+          className="w-full px-10 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA] pr-10"
+        />
+        
+        {value && (
+          <button
+            onClick={handleClear}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
 
       {suggestions.length > 0 && (
         <div className="absolute bg-white border rounded-xl mt-1 w-full z-50 max-h-60 overflow-y-auto">
@@ -60,7 +80,7 @@ export default function LocationInput({ placeholder, onSelect }: Props) {
             <div
               key={i}
               onClick={() => {
-                setValue(s.display_name);
+                onChange(s.display_name);
                 onSelect({ lat: Number(s.lat), lon: Number(s.lon) });
                 setSuggestions([]);
               }}

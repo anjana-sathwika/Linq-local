@@ -24,12 +24,15 @@ interface Listing {
 export default function SearchListings() {
   const [fromCoords, setFromCoords] = useState<Coordinates | null>(null);
   const [toCoords, setToCoords] = useState<Coordinates | null>(null);
+  const [fromText, setFromText] = useState("");
+  const [toText, setToText] = useState("");
 
   const [allListings, setAllListings] = useState<Listing[]>([]);
   const [results, setResults] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searching, setSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -79,34 +82,50 @@ export default function SearchListings() {
   }
 
   // ===== SEARCH =====
-  function handleSearch() {
-    if (!fromCoords || !toCoords) {
-      setError("Please select locations from suggestions");
-      return;
+  function performSearch() {
+    setError(null);
+    setSearching(true);
+    setHasSearched(true);
+
+    let filtered = allListings;
+
+    // Priority 1: If coordinates exist, use distance filtering
+    if (fromCoords && toCoords) {
+      filtered = filtered.filter((item) => {
+        if (!item.from_lat || !item.to_lat) return false;
+
+        const d1 = getDistance(
+          fromCoords.lat,
+          fromCoords.lon,
+          Number(item.from_lat),
+          Number(item.from_lng)
+        );
+
+        const d2 = getDistance(
+          toCoords.lat,
+          toCoords.lon,
+          Number(item.to_lat),
+          Number(item.to_lng)
+        );
+
+        return d1 < 6 && d2 < 6;
+      });
     }
 
-    setSearching(true);
-    setError(null);
-
-    const filtered = allListings.filter((item) => {
-      if (!item.from_lat || !item.to_lat) return false;
-
-      const d1 = getDistance(
-        fromCoords.lat,
-        fromCoords.lon,
-        Number(item.from_lat),
-        Number(item.from_lng)
+    // Priority 2: Text matching (fallback or additional filter)
+    if (fromText.trim()) {
+      const fromLower = fromText.toLowerCase().trim();
+      filtered = filtered.filter((item) =>
+        item.from.toLowerCase().includes(fromLower)
       );
+    }
 
-      const d2 = getDistance(
-        toCoords.lat,
-        toCoords.lon,
-        Number(item.to_lat),
-        Number(item.to_lng)
+    if (toText.trim()) {
+      const toLower = toText.toLowerCase().trim();
+      filtered = filtered.filter((item) =>
+        item.to.toLowerCase().includes(toLower)
       );
-
-      return d1 < 6 && d2 < 6;
-    });
+    }
 
     setResults(filtered);
     setSearching(false);
@@ -115,6 +134,24 @@ export default function SearchListings() {
       resultsRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   }
+
+  function handleSearch() {
+    performSearch();
+  }
+
+  // Real-time search trigger
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (fromText || toText) {
+        performSearch();
+      } else if (!fromText && !toText) {
+        // Show all listings when both inputs are empty
+        setResults(allListings);
+      }
+    }, 300); // Debounce search
+
+    return () => clearTimeout(timer);
+  }, [fromText, toText, fromCoords, toCoords, allListings]);
 
   return (
     <section
@@ -170,18 +207,24 @@ export default function SearchListings() {
         <div className="flex flex-col md:flex-row gap-4">
           <LocationInput
             placeholder="From"
+            value={fromText}
+            onChange={setFromText}
             onSelect={(coords) => {
               setFromCoords(coords);
               setError(null);
             }}
+            onClear={() => setFromCoords(null)}
           />
 
           <LocationInput
             placeholder="To"
+            value={toText}
+            onChange={setToText}
             onSelect={(coords) => {
               setToCoords(coords);
               setError(null);
             }}
+            onClear={() => setToCoords(null)}
           />
 
           <button
@@ -233,6 +276,60 @@ export default function SearchListings() {
                 </div>
               );
             })}
+          </div>
+        ) : hasSearched && (fromText || toText) ? (
+          <div>
+            {/* Apology message card */}
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 text-center mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                Sorry, we don't have people travelling in this direction yet.
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Please share your details — we'll match you shortly.
+              </p>
+              <Link href="/connect/new">
+                <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
+                  Give your details directly
+                </button>
+              </Link>
+            </div>
+
+            {/* Divider text */}
+            <div className="text-center mb-6">
+              <p className="text-gray-500 text-sm font-medium">You can still explore other travellers</p>
+            </div>
+
+            {/* All listings grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {allListings.map((person) => {
+                const masked = person.name?.slice(0, 3) + "***";
+                const female = person.gender?.toLowerCase() === "female";
+
+                return (
+                  <div
+                    key={person.id}
+                    className="bg-gray-50 rounded-2xl p-6 flex justify-between"
+                  >
+                    <div>
+                      <div className="font-semibold">
+                        {masked} {female ? "♀" : "♂"}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        <span className="font-medium max-w-[180px] truncate inline-block">
+                          {shortLocation(person.from)} → {shortLocation(person.to)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <Link href={`/connect/${person.id}`}>
+                      <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition">
+                        Connect
+                      </button>
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         ) : (
           <p className="text-center py-10 text-gray-500">
