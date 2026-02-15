@@ -1,5 +1,6 @@
 "use client";
 
+import { FaInstagram } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import LocationInput from "./LocationInput";
@@ -191,8 +192,10 @@ export default function SearchListings() {
             href="https://www.instagram.com/gotogetherrides/"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
+            className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition inline-flex"
+            onClick={(e) => e.stopPropagation()}
           >
+            <FaInstagram className="text-lg" />
             View us on Insta
           </a>
 

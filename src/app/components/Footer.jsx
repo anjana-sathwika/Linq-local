@@ -26,16 +26,18 @@ export default function Footer() {
 
         {/* BUTTONS */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
-          <a href="#search">
-            <button className="bg-white text-[#2F5EEA] px-7 py-3 rounded-full font-semibold shadow hover:scale-105 transition">
-              Find a Ride
-            </button>
+          <a
+            href="#search"
+            className="bg-white text-[#2F5EEA] px-7 py-3 rounded-full font-semibold shadow hover:scale-105 transition inline-block"
+          >
+            Find a Ride
           </a>
 
-          <a href="/connect/new">
-            <button className="bg-[#1E3FAE] px-7 py-3 rounded-full font-semibold shadow hover:scale-105 transition">
-              Post a Ride
-            </button>
+          <a
+            href="/connect/new"
+            className="bg-[#1E3FAE] px-7 py-3 rounded-full font-semibold shadow hover:scale-105 transition inline-block"
+          >
+            Post a Ride
           </a>
         </div>
 
@@ -45,6 +47,7 @@ export default function Footer() {
           <a
             href="https://whatsapp.com/channel/0029VbAqx8E4SpkCdVRxhf2E"
             target="_blank"
+            rel="noopener noreferrer"
             className="hover:scale-110 transition"
           >
             <FaWhatsapp />
@@ -53,6 +56,7 @@ export default function Footer() {
           <a
             href="https://www.linkedin.com/company/gotogetherrides/"
             target="_blank"
+            rel="noopener noreferrer"
             className="hover:scale-110 transition"
           >
             <FaLinkedin />
@@ -62,7 +66,7 @@ export default function Footer() {
             href="https://www.instagram.com/gotogetherrides/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:scale-110 transition"
+            className="flex items-center gap-2 hover:scale-110 transition"
           >
             <FaInstagram />
           </a>
@@ -70,10 +74,12 @@ export default function Footer() {
           <a
             href="https://x.com/GoTogetherRides"
             target="_blank"
+            rel="noopener noreferrer"
             className="hover:scale-110 transition"
           >
             <FaTwitter />
           </a>
+
         </div>
 
         {/* COPYRIGHT */}
