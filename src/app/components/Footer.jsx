@@ -59,8 +59,9 @@ export default function Footer() {
           </a>
 
           <a
-            href="https://www.instagram.com/gotogetherrides"
+            href="https://www.instagram.com/gotogetherrides/"
             target="_blank"
+            rel="noopener noreferrer"
             className="hover:scale-110 transition"
           >
             <FaInstagram />

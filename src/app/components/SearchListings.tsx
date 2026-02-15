@@ -190,6 +190,7 @@ export default function SearchListings() {
           <a
             href="https://www.instagram.com/gotogetherrides/"
             target="_blank"
+            rel="noopener noreferrer"
             className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
           >
             View us on Insta

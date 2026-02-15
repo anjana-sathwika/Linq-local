@@ -7,26 +7,26 @@ export default function Testimonials() {
     {
       quote:
         "I really liked the Go Together Ride platform. Great idea for daily commuters.",
-      instaLink: "https://www.instagram.com/p/DPlX7nzkaUs/",
+      instaLink: "https://www.instagram.com/gotogetherrides/",
     },
     {
       quote:
         "Thank you so much for helping me find a perfect lead with patience.",
-      instaLink: "https://www.instagram.com/p/DPwCSIgiAZV/",
+      instaLink: "https://www.instagram.com/gotogetherrides/",
     },
     {
       quote:
         "Such a good initiative to save time and money. Really happy using it.",
-      instaLink: "https://www.instagram.com/p/DPtdNCJkVgz/",
+      instaLink: "https://www.instagram.com/gotogetherrides/",
     },
     {
       quote:
         "Smooth experience and reliable coordination. Highly recommended.",
-      instaLink: "https://www.instagram.com/p/DPQWyRDEQD6/",
+      instaLink: "https://www.instagram.com/gotogetherrides/",
     },
     {
       quote: "Safe rides and great vibes. Can’t wait to ride again!",
-      instaLink: "https://www.instagram.com/p/DPN2noEkQaJ/",
+      instaLink: "https://www.instagram.com/gotogetherrides/",
     },
   ];
 
