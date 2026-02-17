@@ -361,7 +361,7 @@ export default function SearchListings() {
       {/* ===== RESULTS ===== */}
       <div
         ref={resultsRef}
-        className="bg-white rounded-2xl shadow-inner p-4 max-h-[500px] overflow-y-auto"
+        className="bg-white rounded-2xl shadow-inner p-4"
       >
         {loading ? (
           <p className="text-center py-10">Loading people…</p>
@@ -370,7 +370,7 @@ export default function SearchListings() {
         ) : (
           <div>
             {/* All profiles sorted by match score */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {results.map((person) => {
                 const masked = person.name?.slice(0, 3) + "***";
                 const gender = person.gender?.toLowerCase();
@@ -378,9 +378,9 @@ export default function SearchListings() {
                 return (
                   <div
                     key={person.id}
-                    className="bg-gray-50 rounded-2xl p-6 flex justify-between"
+                    className="bg-gray-50 rounded-2xl p-4 flex flex-col justify-between"
                   >
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       {/* Match Type Label */}
                       {person.matchType && person.matchType !== "Other" && (
                         <div className="text-xs font-semibold text-blue-600 mb-2">
@@ -406,7 +406,7 @@ export default function SearchListings() {
                       
                       {/* Route */}
                       <div className="text-sm text-gray-500 mb-2">
-                        <span className="font-medium max-w-[180px] truncate inline-block">
+                        <span className="font-medium truncate block">
                           {shortLocation(person.from)} → {shortLocation(person.to)}
                         </span>
                       </div>
@@ -440,7 +440,7 @@ export default function SearchListings() {
                     </div>
 
                     <Link href={`/connect/${person.id}`}>
-                      <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition ml-4">
+                      <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition shrink-0">
                         Connect
                       </button>
                     </Link>
