@@ -27,6 +27,7 @@ interface Listing {
   evening_connect?: string;
   evening_time?: string;
   message?: string;
+  travel_days?: string;
   score?: number;
   matchType?: string;
 }
@@ -36,6 +37,7 @@ export default function SearchListings() {
   const [toCoords, setToCoords] = useState<Coordinates | null>(null);
   const [fromText, setFromText] = useState("");
   const [toText, setToText] = useState("");
+  const [searchTravelDays, setSearchTravelDays] = useState<string[]>([]);
 
   const [allListings, setAllListings] = useState<Listing[]>([]);
   const [results, setResults] = useState<Listing[]>([]);
@@ -92,6 +94,24 @@ export default function SearchListings() {
     return address.split(",")[0];
   }
 
+  function formatTravelDays(travelDays: string): string {
+    if (!travelDays) return "";
+    
+    const days = travelDays.split(",").map(d => d.trim());
+    
+    // Check for common patterns
+    if (days.length === 7) return "Everyday";
+    if (days.length === 5 && days.includes("Mon") && days.includes("Fri") && !days.includes("Sat") && !days.includes("Sun")) {
+      return "Mon-Fri";
+    }
+    if (days.length === 6 && days.includes("Mon") && days.includes("Sat") && !days.includes("Sun")) {
+      return "Mon-Sat";
+    }
+    
+    // Return comma-separated for specific days
+    return days.join(", ");
+  }
+
   // ===== SEARCH & MATCHING =====
   function calculateMatchScore(profile: Listing): { score: number; matchType: string } {
     let score = 0;
@@ -101,7 +121,7 @@ export default function SearchListings() {
     const profileFromLower = profile.from?.toLowerCase() || "";
     const profileToLower = profile.to?.toLowerCase() || "";
 
-    // 🥇 1. Exact keyword match (highest priority)
+    // 🥇 1. Exact route match (highest priority)
     const exactFromMatch = fromLower && profileFromLower.includes(fromLower);
     const exactToMatch = toLower && profileToLower.includes(toLower);
     
@@ -109,7 +129,7 @@ export default function SearchListings() {
       score += 100;
       matchType = "⭐ Best match";
     } else if (exactFromMatch || exactToMatch) {
-      score += 50;
+      score += 30;
       matchType = "Partial match";
     }
 
@@ -138,20 +158,29 @@ export default function SearchListings() {
       }
     }
 
-    // 🥉 3. Partial keyword match
-    if (exactFromMatch && !exactToMatch) {
-      score += 30;
-    }
-    if (exactToMatch && !exactFromMatch) {
-      score += 30;
+    // 🥉 3. Same travel days
+    if (searchTravelDays.length > 0 && profile.travel_days) {
+      const profileDays = profile.travel_days.split(",").map(d => d.trim());
+      const sameDays = searchTravelDays.filter(day => profileDays.includes(day));
+      const overlappingDays = searchTravelDays.filter(day => profileDays.includes(day));
+      
+      if (sameDays.length === searchTravelDays.length && searchTravelDays.length > 0) {
+        score += 25;
+        if (matchType === "Other") matchType = "Same travel days";
+      } else if (overlappingDays.length > 0) {
+        score += 15;
+        if (matchType === "Other") matchType = "Overlapping days";
+      }
     }
 
-    // 4. Bonus points
-    if (profile.has_vehicle === "Yes") {
-      score += 5;
-    }
+    // 4. Timing overlap
     if (profile.morning_time || profile.evening_time) {
       score += 10;
+    }
+
+    // 5. Bonus points
+    if (profile.has_vehicle === "Yes") {
+      score += 5;
     }
 
     return { score, matchType };
@@ -287,6 +316,32 @@ export default function SearchListings() {
             {searching ? "Searching..." : "Search"}
           </button>
         </div>
+        
+        {/* Travel Days Filter */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filter by travel days (optional)
+          </label>
+          <div className="grid grid-cols-3 md:grid-cols-7 gap-2">
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+              <label key={day} className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={searchTravelDays.includes(day)}
+                  onChange={() => {
+                    setSearchTravelDays(prev => 
+                      prev.includes(day) 
+                        ? prev.filter(d => d !== day)
+                        : [...prev, day]
+                    );
+                  }}
+                  className="mr-1"
+                />
+                <span className="text-xs">{day}</span>
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* ===== ALWAYS VISIBLE GIVE DETAILS SECTION ===== */}
@@ -357,6 +412,13 @@ export default function SearchListings() {
                         {person.morning_time && `🌅 ${person.morning_time}`}
                         {person.evening_connect === "Yes" && person.evening_time && ` 🌆 ${person.evening_time}`}
                       </div>
+                      
+                      {/* Travel Days */}
+                      {person.travel_days && (
+                        <div className="text-xs text-gray-600 mb-1">
+                          🗓 Travel: {formatTravelDays(person.travel_days)}
+                        </div>
+                      )}
                       
                       {/* Message */}
                       {person.message && (

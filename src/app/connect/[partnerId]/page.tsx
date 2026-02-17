@@ -18,6 +18,8 @@ interface FormData {
   willing_return: string;
   return_time: string;
   message_to_partner: string;
+  travel_frequency: string;
+  travel_days: string[];
 }
 
 export default function ConnectPage() {
@@ -41,6 +43,8 @@ export default function ConnectPage() {
     willing_return: "",
     return_time: "",
     message_to_partner: "",
+    travel_frequency: "",
+    travel_days: [],
   });
 
   const [errors, setErrors] = useState<Partial<FormData>>({});
@@ -72,6 +76,23 @@ export default function ConnectPage() {
       ...prev,
       willing_return: value,
       return_time: value === "No" ? "" : prev.return_time,
+    }));
+  }
+
+  function handleTravelFrequencyChange(value: string) {
+    setForm(prev => ({
+      ...prev,
+      travel_frequency: value,
+      travel_days: value === "Specific days" ? prev.travel_days : [],
+    }));
+  }
+
+  function handleTravelDayToggle(day: string) {
+    setForm(prev => ({
+      ...prev,
+      travel_days: prev.travel_days.includes(day)
+        ? prev.travel_days.filter(d => d !== day)
+        : [...prev.travel_days, day],
     }));
   }
 
@@ -182,6 +203,7 @@ export default function ConnectPage() {
         to_lat: toCoords?.lat || "",
         to_lng: toCoords?.lng || "",
         partner_id: partnerId || "",
+        travel_days: form.travel_days.length > 0 ? form.travel_days.join(",") : form.travel_frequency || "",
       };
 
       // Check for duplicates
@@ -541,6 +563,46 @@ export default function ConnectPage() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent"
                 />
+              </div>
+            )}
+
+            {/* Travel Frequency */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                How often will you travel?
+              </label>
+              <select
+                name="travel_frequency"
+                value={form.travel_frequency}
+                onChange={(e) => handleTravelFrequencyChange(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent"
+              >
+                <option value="">Select frequency</option>
+                <option value="Everyday">Everyday</option>
+                <option value="Monday to Friday">Monday to Friday</option>
+                <option value="Monday to Saturday">Monday to Saturday</option>
+                <option value="Specific days">Specific days</option>
+              </select>
+            </div>
+
+            {form.travel_frequency === "Specific days" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select travel days
+                </label>
+                <div className="grid grid-cols-3 md:grid-cols-7 gap-3">
+                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                    <label key={day} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={form.travel_days.includes(day)}
+                        onChange={() => handleTravelDayToggle(day)}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">{day}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             )}
 
