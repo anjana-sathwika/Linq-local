@@ -373,7 +373,7 @@ export default function SearchListings() {
             <div className="grid md:grid-cols-2 gap-6">
               {results.map((person) => {
                 const masked = person.name?.slice(0, 3) + "***";
-                const female = person.gender?.toLowerCase() === "female";
+                const gender = person.gender?.toLowerCase();
 
                 return (
                   <div
@@ -390,7 +390,7 @@ export default function SearchListings() {
                       
                       {/* Name and Gender */}
                       <div className="font-semibold mb-2">
-                        {masked} {female ? "♀" : "♂"}
+                        {masked} {gender === "female" ? "female" : gender === "male" ? "male" : gender}
                       </div>
                       
                       {/* Route */}
@@ -403,7 +403,7 @@ export default function SearchListings() {
                       {/* Vehicle Info */}
                       {person.has_vehicle === "Yes" && (
                         <div className="text-xs text-gray-600 mb-1">
-                          🚗 {person.vehicle_type || "Vehicle"} {person.seats && `(${person.seats} seats)`}
+                          {person.vehicle_type?.toLowerCase() === "bike" ? "🏍️" : "🚗"} {person.vehicle_type || "Vehicle"} {person.seats && `(${person.seats} seats)`}
                         </div>
                       )}
                       
