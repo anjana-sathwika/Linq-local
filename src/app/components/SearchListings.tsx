@@ -361,7 +361,7 @@ export default function SearchListings() {
       {/* ===== RESULTS ===== */}
       <div
         ref={resultsRef}
-        className="bg-white rounded-2xl shadow-inner p-4 overflow-x-hidden"
+        className="w-full max-w-6xl mx-auto px-3"
       >
         {loading ? (
           <p className="text-center py-10">Loading people…</p>
@@ -369,84 +369,91 @@ export default function SearchListings() {
           <p className="text-center py-10 text-red-500">{error}</p>
         ) : (
           <div>
-            {/* All profiles sorted by match score */}
-            <div className="space-y-4">
-              {results.map((person) => {
-                const masked = person.name?.slice(0, 3) + "***";
-                const gender = person.gender?.toLowerCase();
+            {/* SCROLLABLE AREA */}
+            <div className="
+              h-[70vh] 
+              overflow-y-auto 
+              overflow-x-hidden
+              pr-1
+            ">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {results.map((person) => {
+                  const masked = person.name?.slice(0, 3) + "***";
+                  const gender = person.gender?.toLowerCase();
 
-                return (
-                  <div
-                    key={person.id}
-                    className="bg-gray-50 rounded-2xl p-4 flex flex-row items-start justify-between w-full max-w-full"
-                  >
-                    <Link href={`/connect/${person.id}`}>
-                      <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition shrink-0 mr-4">
-                        Connect
-                      </button>
-                    </Link>
-                    
-                    <div className="flex-1 min-w-0">
-                      {/* Match Type Label */}
-                      {person.matchType && person.matchType !== "Other" && (
-                        <div className="text-xs font-semibold text-blue-600 mb-2">
-                          {person.matchType}
+                  return (
+                    <div
+                      key={person.id}
+                      className="w-full overflow-hidden rounded-2xl bg-white shadow p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          {/* Match Type Label */}
+                          {person.matchType && person.matchType !== "Other" && (
+                            <div className="text-xs font-semibold text-blue-600 mb-2">
+                              {person.matchType}
+                            </div>
+                          )}
+                          
+                          {/* Name and Gender */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <p className="font-semibold truncate">{masked}</p>
+                            {gender && (
+                              <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                gender === "female" 
+                                  ? "bg-pink-100 text-pink-700" 
+                                  : gender === "male" 
+                                    ? "bg-blue-100 text-blue-700"
+                                    : "bg-gray-100 text-gray-600"
+                              }`}>
+                                {gender.charAt(0).toUpperCase() + gender.slice(1)}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Route */}
+                          <p className="text-sm text-gray-600 truncate mb-2">
+                            {shortLocation(person.from)} → {shortLocation(person.to)}
+                          </p>
+                          
+                          {/* Vehicle Info */}
+                          {person.has_vehicle === "Yes" && (
+                            <p className="text-xs text-gray-400 mb-1">
+                              {person.vehicle_type?.toLowerCase() === "bike" ? "🏍️" : "🚗"} {person.vehicle_type || "Vehicle"} {person.seats && `(${person.seats} seats)`}
+                            </p>
+                          )}
+                          
+                          {/* Timings */}
+                          <div className="text-xs text-gray-600 mb-1">
+                            {person.morning_time && `🌅 ${person.morning_time}`}
+                            {person.evening_connect === "Yes" && person.evening_time && ` 🌆 ${person.evening_time}`}
+                          </div>
+                          
+                          {/* Travel Days */}
+                          {person.travel_days && (
+                            <div className="text-xs text-gray-600 mb-1">
+                              🗓 Travel: {formatTravelDays(person.travel_days)}
+                            </div>
+                          )}
+                          
+                          {/* Message with 3-line clamp */}
+                          {person.message && (
+                            <p className="text-sm text-gray-500 mt-1 line-clamp-3">
+                              "{person.message}"
+                            </p>
+                          )}
                         </div>
-                      )}
-                      
-                      {/* Name and Gender */}
-                      <div className="font-semibold mb-2 flex items-center gap-2">
-                        {masked}
-                        {gender && (
-                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                            gender === "female" 
-                              ? "bg-pink-100 text-pink-700" 
-                              : gender === "male" 
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-600"
-                          }`}>
-                            {gender.charAt(0).toUpperCase() + gender.slice(1)}
-                          </span>
-                        )}
+                        
+                        <Link href={`/connect/${person.id}`}>
+                          <button className="shrink-0 px-4 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition">
+                            Connect
+                          </button>
+                        </Link>
                       </div>
-                      
-                      {/* Route */}
-                      <div className="text-sm text-gray-500 mb-2">
-                        <span className="font-medium truncate block">
-                          {shortLocation(person.from)} → {shortLocation(person.to)}
-                        </span>
-                      </div>
-                      
-                      {/* Vehicle Info */}
-                      {person.has_vehicle === "Yes" && (
-                        <div className="text-xs text-gray-600 mb-1">
-                          {person.vehicle_type?.toLowerCase() === "bike" ? "🏍️" : "🚗"} {person.vehicle_type || "Vehicle"} {person.seats && `(${person.seats} seats)`}
-                        </div>
-                      )}
-                      
-                      {/* Timings */}
-                      <div className="text-xs text-gray-600 mb-1">
-                        {person.morning_time && `🌅 ${person.morning_time}`}
-                        {person.evening_connect === "Yes" && person.evening_time && ` 🌆 ${person.evening_time}`}
-                      </div>
-                      
-                      {/* Travel Days */}
-                      {person.travel_days && (
-                        <div className="text-xs text-gray-600 mb-1">
-                          🗓 Travel: {formatTravelDays(person.travel_days)}
-                        </div>
-                      )}
-                      
-                      {/* Message */}
-                      {person.message && (
-                        <div className="text-xs text-gray-500 mt-2 italic">
-                          "{person.message}"
-                        </div>
-                      )}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
             
             {results.length === 0 && (
