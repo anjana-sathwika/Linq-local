@@ -361,7 +361,7 @@ export default function SearchListings() {
       {/* ===== RESULTS ===== */}
       <div
         ref={resultsRef}
-        className="bg-white rounded-2xl shadow-inner p-4"
+        className="bg-white rounded-2xl shadow-inner p-4 overflow-x-hidden"
       >
         {loading ? (
           <p className="text-center py-10">Loading people…</p>
@@ -370,7 +370,7 @@ export default function SearchListings() {
         ) : (
           <div>
             {/* All profiles sorted by match score */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-4">
               {results.map((person) => {
                 const masked = person.name?.slice(0, 3) + "***";
                 const gender = person.gender?.toLowerCase();
@@ -378,8 +378,14 @@ export default function SearchListings() {
                 return (
                   <div
                     key={person.id}
-                    className="bg-gray-50 rounded-2xl p-4 flex flex-col justify-between"
+                    className="bg-gray-50 rounded-2xl p-4 flex flex-row items-start justify-between w-full max-w-full"
                   >
+                    <Link href={`/connect/${person.id}`}>
+                      <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition shrink-0 mr-4">
+                        Connect
+                      </button>
+                    </Link>
+                    
                     <div className="flex-1 min-w-0">
                       {/* Match Type Label */}
                       {person.matchType && person.matchType !== "Other" && (
@@ -438,12 +444,6 @@ export default function SearchListings() {
                         </div>
                       )}
                     </div>
-
-                    <Link href={`/connect/${person.id}`}>
-                      <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition shrink-0">
-                        Connect
-                      </button>
-                    </Link>
                   </div>
                 );
               })}
