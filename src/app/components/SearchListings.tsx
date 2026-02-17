@@ -20,6 +20,15 @@ interface Listing {
   from_lng?: number;
   to_lat?: number;
   to_lng?: number;
+  has_vehicle?: string;
+  vehicle_type?: string;
+  seats?: string;
+  morning_time?: string;
+  evening_connect?: string;
+  evening_time?: string;
+  message?: string;
+  score?: number;
+  matchType?: string;
 }
 
 export default function SearchListings() {
@@ -83,53 +92,86 @@ export default function SearchListings() {
     return address.split(",")[0];
   }
 
-  // ===== SEARCH =====
+  // ===== SEARCH & MATCHING =====
+  function calculateMatchScore(profile: Listing): { score: number; matchType: string } {
+    let score = 0;
+    let matchType = "Other";
+    const fromLower = fromText.toLowerCase().trim();
+    const toLower = toText.toLowerCase().trim();
+    const profileFromLower = profile.from?.toLowerCase() || "";
+    const profileToLower = profile.to?.toLowerCase() || "";
+
+    // 🥇 1. Exact keyword match (highest priority)
+    const exactFromMatch = fromLower && profileFromLower.includes(fromLower);
+    const exactToMatch = toLower && profileToLower.includes(toLower);
+    
+    if (exactFromMatch && exactToMatch) {
+      score += 100;
+      matchType = "⭐ Best match";
+    } else if (exactFromMatch || exactToMatch) {
+      score += 50;
+      matchType = "Partial match";
+    }
+
+    // 🥈 2. Nearby route match (lat/lng)
+    if (fromCoords && toCoords && profile.from_lat && profile.from_lng && profile.to_lat && profile.to_lng) {
+      const fromDistance = getDistance(
+        fromCoords.lat,
+        fromCoords.lon,
+        profile.from_lat,
+        profile.from_lng
+      );
+      const toDistance = getDistance(
+        toCoords.lat,
+        toCoords.lon,
+        profile.to_lat,
+        profile.to_lng
+      );
+
+      // Both within 8km = high priority
+      if (fromDistance < 8 && toDistance < 8) {
+        score += 80;
+        if (matchType === "Other") matchType = "🔁 Similar route";
+      } else if (fromDistance < 8 || toDistance < 8) {
+        score += 40;
+        if (matchType === "Other") matchType = "Nearby route";
+      }
+    }
+
+    // 🥉 3. Partial keyword match
+    if (exactFromMatch && !exactToMatch) {
+      score += 30;
+    }
+    if (exactToMatch && !exactFromMatch) {
+      score += 30;
+    }
+
+    // 4. Bonus points
+    if (profile.has_vehicle === "Yes") {
+      score += 5;
+    }
+    if (profile.morning_time || profile.evening_time) {
+      score += 10;
+    }
+
+    return { score, matchType };
+  }
+
   function performSearch() {
     setError(null);
     setSearching(true);
     setHasSearched(true);
 
-    let filtered = allListings;
+    // Calculate scores for all profiles
+    const scoredListings = allListings.map(profile => {
+      const { score, matchType } = calculateMatchScore(profile);
+      return { ...profile, score, matchType };
+    });
 
-    // Priority 1: If coordinates exist, use distance filtering
-    if (fromCoords && toCoords) {
-      filtered = filtered.filter((item) => {
-        if (!item.from_lat || !item.to_lat) return false;
+    // Sort by score (descending)
+    const sortedListings = scoredListings.sort((a, b) => (b.score || 0) - (a.score || 0));
 
-        const d1 = getDistance(
-          fromCoords.lat,
-          fromCoords.lon,
-          Number(item.from_lat),
-          Number(item.from_lng)
-        );
-
-        const d2 = getDistance(
-          toCoords.lat,
-          toCoords.lon,
-          Number(item.to_lat),
-          Number(item.to_lng)
-        );
-
-        return d1 < 6 && d2 < 6;
-      });
-    }
-
-    // Priority 2: Text matching (fallback or additional filter)
-    if (fromText.trim()) {
-      const fromLower = fromText.toLowerCase().trim();
-      filtered = filtered.filter((item) =>
-        item.from.toLowerCase().includes(fromLower)
-      );
-    }
-
-    if (toText.trim()) {
-      const toLower = toText.toLowerCase().trim();
-      filtered = filtered.filter((item) =>
-        item.to.toLowerCase().includes(toLower)
-      );
-    }
-
-    setResults(filtered);
+    setResults(sortedListings);
     setSearching(false);
 
     // Only scroll when search button is pressed
@@ -247,6 +289,20 @@ export default function SearchListings() {
         </div>
       </div>
 
+      {/* ===== ALWAYS VISIBLE GIVE DETAILS SECTION ===== */}
+      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-8">
+        <p className="text-gray-800 mb-4 text-center">
+          If exact matches aren't found, "Give your details directly" — we'll match you shortly.
+        </p>
+        <div className="text-center">
+          <Link href="/connect/new">
+            <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
+              Give your details directly
+            </button>
+          </Link>
+        </div>
+      </div>
+
       {/* ===== RESULTS ===== */}
       <div
         ref={resultsRef}
@@ -256,55 +312,10 @@ export default function SearchListings() {
           <p className="text-center py-10">Loading people…</p>
         ) : error && !loading ? (
           <p className="text-center py-10 text-red-500">{error}</p>
-        ) : results.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-6">
-            {results.map((person) => {
-              const masked = person.name?.slice(0, 3) + "***";
-              const female = person.gender?.toLowerCase() === "female";
-
-              return (
-                <div
-                  key={person.id}
-                  className="bg-gray-50 rounded-2xl p-6 flex justify-between"
-                >
-                  <div>
-                    <div className="font-semibold">
-                      {masked} {female ? "♀" : "♂"}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      <span className="font-medium max-w-[180px] truncate inline-block">
-                        {shortLocation(person.from)} → {shortLocation(person.to)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <Link href={`/connect/${person.id}`}>
-                    <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition">
-                      Connect
-                    </button>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        ) : (fromText || toText) ? (
+        ) : (
           <div>
-            {/* Message + button */}
-            {(results.length === 0 && searchPressed) ? (
-              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center mb-8">
-                <p className="text-gray-800 mb-4">
-                  If exact matches aren't found, please give your details directly — we'll match you shortly.
-                </p>
-                <Link href="/connect/new">
-                  <button className="bg-[#2F5EEA] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E3FAE] transition">
-                    Give your details directly
-                  </button>
-                </Link>
-              </div>
-            ) : null}
-
-            {/* Matched users first */}
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* All profiles sorted by match score */}
+            <div className="grid md:grid-cols-2 gap-6">
               {results.map((person) => {
                 const masked = person.name?.slice(0, 3) + "***";
                 const female = person.gender?.toLowerCase() === "female";
@@ -314,19 +325,49 @@ export default function SearchListings() {
                     key={person.id}
                     className="bg-gray-50 rounded-2xl p-6 flex justify-between"
                   >
-                    <div>
-                      <div className="font-semibold">
+                    <div className="flex-1">
+                      {/* Match Type Label */}
+                      {person.matchType && person.matchType !== "Other" && (
+                        <div className="text-xs font-semibold text-blue-600 mb-2">
+                          {person.matchType}
+                        </div>
+                      )}
+                      
+                      {/* Name and Gender */}
+                      <div className="font-semibold mb-2">
                         {masked} {female ? "♀" : "♂"}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      
+                      {/* Route */}
+                      <div className="text-sm text-gray-500 mb-2">
                         <span className="font-medium max-w-[180px] truncate inline-block">
                           {shortLocation(person.from)} → {shortLocation(person.to)}
                         </span>
                       </div>
+                      
+                      {/* Vehicle Info */}
+                      {person.has_vehicle === "Yes" && (
+                        <div className="text-xs text-gray-600 mb-1">
+                          🚗 {person.vehicle_type || "Vehicle"} {person.seats && `(${person.seats} seats)`}
+                        </div>
+                      )}
+                      
+                      {/* Timings */}
+                      <div className="text-xs text-gray-600 mb-1">
+                        {person.morning_time && `🌅 ${person.morning_time}`}
+                        {person.evening_connect === "Yes" && person.evening_time && ` 🌆 ${person.evening_time}`}
+                      </div>
+                      
+                      {/* Message */}
+                      {person.message && (
+                        <div className="text-xs text-gray-500 mt-2 italic">
+                          "{person.message}"
+                        </div>
+                      )}
                     </div>
 
                     <Link href={`/connect/${person.id}`}>
-                      <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition">
+                      <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition ml-4">
                         Connect
                       </button>
                     </Link>
@@ -334,45 +375,13 @@ export default function SearchListings() {
                 );
               })}
             </div>
-
-            {/* All listings grid */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {allListings
-                .filter(person => !results.find(result => result.id === person.id))
-                .map((person) => {
-                  const masked = person.name?.slice(0, 3) + "***";
-                  const female = person.gender?.toLowerCase() === "female";
-
-                  return (
-                    <div
-                      key={person.id}
-                      className="bg-gray-50 rounded-2xl p-6 flex justify-between"
-                    >
-                      <div>
-                        <div className="font-semibold">
-                          {masked} {female ? "♀" : "♂"}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          <span className="font-medium max-w-[180px] truncate inline-block">
-                            {shortLocation(person.from)} → {shortLocation(person.to)}
-                          </span>
-                        </div>
-                      </div>
-
-                      <Link href={`/connect/${person.id}`}>
-                        <button className="bg-[#2F5EEA] text-white px-4 py-2 rounded-full hover:bg-[#1E3FAE] transition">
-                          Connect
-                        </button>
-                        </Link>
-                    </div>
-                  );
-                })}
-            </div>
+            
+            {results.length === 0 && (
+              <p className="text-center py-10 text-gray-500">
+                No matches nearby
+              </p>
+            )}
           </div>
-        ) : (
-          <p className="text-center py-10 text-gray-500">
-            No matches nearby
-          </p>
         )}
       </div>
     </section>
