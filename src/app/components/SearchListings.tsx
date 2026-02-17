@@ -389,8 +389,19 @@ export default function SearchListings() {
                       )}
                       
                       {/* Name and Gender */}
-                      <div className="font-semibold mb-2">
-                        {masked} {gender === "female" ? "female" : gender === "male" ? "male" : gender}
+                      <div className="font-semibold mb-2 flex items-center gap-2">
+                        {masked}
+                        {gender && (
+                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                            gender === "female" 
+                              ? "bg-pink-100 text-pink-700" 
+                              : gender === "male" 
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-gray-100 text-gray-600"
+                          }`}>
+                            {gender.charAt(0).toUpperCase() + gender.slice(1)}
+                          </span>
+                        )}
                       </div>
                       
                       {/* Route */}
