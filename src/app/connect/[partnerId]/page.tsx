@@ -195,15 +195,27 @@ export default function ConnectPage() {
 
       // Prepare submission data
       const submissionData = {
-        ...form,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        gender: form.gender,
+        has_vehicle: form.has_vehicle,
+        vehicle_type: form.vehicle_type,
+        seats: form.seats,
+        from: form.from,
+        to: form.to,
+        morning_time: form.time,
+        evening_connect: form.willing_return,
+        evening_time: form.return_time,
+        message: form.message_to_partner,
+        travel_frequency: form.travel_frequency,
+        travel_days: form.travel_days.length > 0 ? form.travel_days.join(",") : "",
         status: "active",
         created_at: new Date().toISOString(),
         from_lat: fromCoords?.lat || "",
         from_lng: fromCoords?.lng || "",
         to_lat: toCoords?.lat || "",
         to_lng: toCoords?.lng || "",
-        partner_id: partnerId || "",
-        travel_days: form.travel_days.length > 0 ? form.travel_days.join(",") : form.travel_frequency || "",
       };
 
       // Check for duplicates
