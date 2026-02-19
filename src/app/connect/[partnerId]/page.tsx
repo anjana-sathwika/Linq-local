@@ -51,6 +51,16 @@ export default function ConnectPage() {
   const [fromSuggestions, setFromSuggestions] = useState<any[]>([]);
   const [toSuggestions, setToSuggestions] = useState<any[]>([]);
 
+  // ===== HELPER FUNCTIONS =====
+  function formatTo12Hour(time: string) {
+    if (!time) return "";
+    const [hour, minute] = time.split(":");
+    const h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  }
+
   // ===== FORM HANDLERS =====
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -520,15 +530,23 @@ export default function ConnectPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Travel Time <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="time"
-                  name="time"
-                  value={form.time}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent ${
-                    errors.time ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
+                <div className="relative">
+                  <input
+                    type="time"
+                    name="time"
+                    value={form.time}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent ${
+                      errors.time ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+
+                  {form.time && (
+                    <span className="absolute right-4 top-3 text-gray-500 text-sm">
+                      {formatTo12Hour(form.time)}
+                    </span>
+                  )}
+                </div>
                 {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
               </div>
 
@@ -568,13 +586,21 @@ export default function ConnectPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Return Time
                 </label>
-                <input
-                  type="time"
-                  name="return_time"
-                  value={form.return_time}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent"
-                />
+                <div className="relative">
+                  <input
+                    type="time"
+                    name="return_time"
+                    value={form.return_time}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent"
+                  />
+
+                  {form.return_time && (
+                    <span className="absolute right-4 top-3 text-gray-500 text-sm">
+                      {formatTo12Hour(form.return_time)}
+                    </span>
+                  )}
+                </div>
               </div>
             )}
 
