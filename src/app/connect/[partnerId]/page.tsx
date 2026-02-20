@@ -249,7 +249,7 @@ export default function ConnectPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ data: submissionData }),
+        body: JSON.stringify(submissionData),
       });
 
       console.log("Response status:", response.status);
@@ -545,21 +545,29 @@ export default function ConnectPage() {
                   Travel Time <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <input
-                    type="time"
+                  <select
                     name="time"
                     value={form.time}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent ${
                       errors.time ? "border-red-500" : "border-gray-300"
                     }`}
-                  />
+                  >
+                    <option value="">Select time</option>
 
-                  {form.time && (
-                    <span className="absolute right-4 top-3 text-gray-500 text-sm">
-                      {formatTo12Hour(form.time)}
-                    </span>
-                  )}
+                    {Array.from({ length: 24 }).map((_, hour) =>
+                      ["00", "15", "30", "45"].map((minute) => {
+                        const h = hour.toString().padStart(2, "0");
+                        const value = `${h}:${minute}`;
+
+                        return (
+                          <option key={value} value={value}>
+                            {formatTo12Hour(value)}
+                          </option>
+                        );
+                      })
+                    )}
+                  </select>
                 </div>
                 {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
               </div>
@@ -601,21 +609,29 @@ export default function ConnectPage() {
                   Return Time
                 </label>
                 <div className="relative">
-                  <input
-                    type="time"
+                  <select
                     name="return_time"
                     value={form.return_time}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent ${
                       errors.return_time ? "border-red-500" : "border-gray-300"
                     }`}
-                  />
+                  >
+                    <option value="">Select return time</option>
 
-                  {form.return_time && (
-                    <span className="absolute right-4 top-3 text-gray-500 text-sm">
-                      {formatTo12Hour(form.return_time)}
-                    </span>
-                  )}
+                    {Array.from({ length: 24 }).map((_, hour) =>
+                      ["00", "15", "30", "45"].map((minute) => {
+                        const h = hour.toString().padStart(2, "0");
+                        const value = `${h}:${minute}`;
+
+                        return (
+                          <option key={value} value={value}>
+                            {formatTo12Hour(value)}
+                          </option>
+                        );
+                      })
+                    )}
+                  </select>
                 </div>
                 {errors.return_time && <p className="text-red-500 text-sm mt-1">{errors.return_time}</p>}
               </div>
