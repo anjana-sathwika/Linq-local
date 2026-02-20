@@ -115,6 +115,11 @@ export default function ConnectPage() {
     if (!form.from.trim()) newErrors.from = "From address is required";
     if (!form.to.trim()) newErrors.to = "To address is required";
     if (!form.time.trim()) newErrors.time = "Time is required";
+    
+    // Validate return time if willing to return is "Yes"
+    if (form.willing_return === "Yes" && !form.return_time.trim()) {
+      newErrors.return_time = "Return time is required when willing to return";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -238,6 +243,7 @@ export default function ConnectPage() {
       }
 
       // Submit to Google Sheets
+      console.log("Submitting data:", submissionData);
       const response = await fetch(process.env.NEXT_PUBLIC_SHEETDB_URL as string, {
         method: "POST",
         headers: {
@@ -246,9 +252,17 @@ export default function ConnectPage() {
         body: JSON.stringify({ data: submissionData }),
       });
 
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+
       if (!response.ok) {
-        throw new Error("Failed to submit details");
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to submit details. Status: ${response.status}, Error: ${errorText}`);
       }
+
+      const responseData = await response.json();
+      console.log("Success response:", responseData);
 
       // Handle success based on route
       if (partnerId) {
@@ -592,7 +606,9 @@ export default function ConnectPage() {
                     name="return_time"
                     value={form.return_time}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent ${
+                      errors.return_time ? "border-red-500" : "border-gray-300"
+                    }`}
                   />
 
                   {form.return_time && (
@@ -601,6 +617,7 @@ export default function ConnectPage() {
                     </span>
                   )}
                 </div>
+                {errors.return_time && <p className="text-red-500 text-sm mt-1">{errors.return_time}</p>}
               </div>
             )}
 
