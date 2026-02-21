@@ -49,12 +49,12 @@ export default function SearchListings() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // ===== LOAD DATA FROM SHEETDB =====
+  // ===== LOAD DATA FROM GOOGLE APPS SCRIPT =====
   useEffect(() => {
     async function fetchListings() {
       try {
         const res = await fetch(
-          process.env.NEXT_PUBLIC_SHEETDB_URL as string
+          process.env.NEXT_PUBLIC_API_URL as string
         );
         const data = await res.json();
 

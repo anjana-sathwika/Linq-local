@@ -170,7 +170,7 @@ export default function ConnectPage() {
   // ===== DUPLICATE CHECK =====
   async function checkDuplicate(submissionData: any): Promise<boolean> {
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_SHEETDB_URL as string);
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL as string);
       const existingData = await response.json();
 
       return existingData.some((row: any) => {
@@ -178,7 +178,7 @@ export default function ConnectPage() {
         const matchPhone = row.phone?.toLowerCase().trim() === submissionData.phone.toLowerCase().trim();
         const matchFrom = row.from?.toLowerCase().trim() === submissionData.from.toLowerCase().trim();
         const matchTo = row.to?.toLowerCase().trim() === submissionData.to.toLowerCase().trim();
-        const matchTime = row.time?.toLowerCase().trim() === submissionData.time.toLowerCase().trim();
+        const matchTime = row.morning_time?.toLowerCase().trim() === submissionData.morning_time.toLowerCase().trim();
 
         return matchName && matchPhone && matchFrom && matchTo && matchTime;
       });
@@ -210,6 +210,7 @@ export default function ConnectPage() {
 
       // Prepare submission data
       const submissionData = {
+        id: Date.now().toString(),
         name: form.name,
         email: form.email,
         phone: form.phone,
@@ -224,27 +225,18 @@ export default function ConnectPage() {
         evening_time: form.return_time,
         message: form.message_to_partner,
         travel_frequency: form.travel_frequency,
-        travel_days: form.travel_days.length > 0 ? form.travel_days.join(",") : "",
+        travel_days: form.travel_days.join(","),
         status: "active",
         created_at: new Date().toISOString(),
         from_lat: fromCoords?.lat || "",
         from_lng: fromCoords?.lng || "",
         to_lat: toCoords?.lat || "",
-        to_lng: toCoords?.lng || "",
+        to_lng: toCoords?.lng || ""
       };
 
-      // Check for duplicates
-      const isDuplicate = await checkDuplicate(submissionData);
-      
-      if (isDuplicate) {
-        alert("Submission already done");
-        setSubmitting(false);
-        return;
-      }
-
-      // Submit to Google Sheets
+      // Submit to Google Apps Script API
       console.log("Submitting data:", submissionData);
-      const response = await fetch(process.env.NEXT_PUBLIC_SHEETDB_URL as string, {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL as string, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -264,10 +256,15 @@ export default function ConnectPage() {
       const responseData = await response.json();
       console.log("Success response:", responseData);
 
+      // Show success alert
+      alert("Details submitted successfully!");
+
+      // Reset submitting state
+      setSubmitting(false);
+
       // Handle success based on route
       if (partnerId) {
         // Redirect to WhatsApp for partner connection
-        setSuccess("Details submitted successfully! Redirecting to WhatsApp...");
         setTimeout(() => {
           const whatsappMessage = encodeURIComponent(
             `Hi LinQ 👋\n\nI want to connect with Partner ID: ${partnerId}\n\nMy details submitted on website.`
@@ -275,8 +272,7 @@ export default function ConnectPage() {
           window.location.href = `https://wa.me/9494823941?text=${whatsappMessage}`;
         }, 2000);
       } else {
-        // Show success and redirect to search for /connect/new
-        alert("Details submitted. We'll match you shortly.");
+        // Redirect to search for /connect/new
         setTimeout(() => {
           window.location.href = "/#search";
         }, 1000);
