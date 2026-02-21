@@ -53,18 +53,11 @@ export default function SearchListings() {
   useEffect(() => {
     async function fetchListings() {
       try {
-        const res = await fetch(
-          process.env.NEXT_PUBLIC_API_URL as string
-        );
+        const res = await fetch(process.env.NEXT_PUBLIC_API_URL as string);
         const data = await res.json();
-
         setAllListings(data);
-        setResults(data);
-        setLoading(false);
       } catch (err) {
         console.error("Failed loading listings:", err);
-        setError("Failed to load listings. Please try again.");
-        setLoading(false);
       }
     }
 

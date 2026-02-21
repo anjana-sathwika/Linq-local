@@ -236,25 +236,10 @@ export default function ConnectPage() {
 
       // Submit to Google Apps Script API
       console.log("Submitting data:", submissionData);
-      const response = await fetch(process.env.NEXT_PUBLIC_API_URL as string, {
+      await fetch(process.env.NEXT_PUBLIC_API_URL as string, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(submissionData),
       });
-
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error response:", errorText);
-        throw new Error(`Failed to submit details. Status: ${response.status}, Error: ${errorText}`);
-      }
-
-      const responseData = await response.json();
-      console.log("Success response:", responseData);
 
       // Show success alert
       alert("Details submitted successfully!");
