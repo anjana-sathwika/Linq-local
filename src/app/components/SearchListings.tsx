@@ -42,27 +42,28 @@ export default function SearchListings() {
   const [allListings, setAllListings] = useState<Listing[]>([]);
   const [results, setResults] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<boolean>(false);
   const [searching, setSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchPressed, setSearchPressed] = useState(false);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-  async function loadListings() {
-    try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL as string);
-      const data = await res.json();
-      setAllListings(data);
-    } catch (err) {
-      console.error("Failed loading listings", err);
-      setError("Failed to load listings");
-    }
-  }
+  const API = process.env.NEXT_PUBLIC_API_URL as string;
 
-  loadListings();
-}, []);
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+        setAllListings(data);
+      } catch (err) {
+        console.error(err);
+        setError(true);
+      }
+    }
+    load();
+  }, []);
 
   // ===== DISTANCE CALC =====
   function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -180,7 +181,7 @@ export default function SearchListings() {
   }
 
   function performSearch() {
-    setError(null);
+    setError(false);
     setSearching(true);
     setHasSearched(true);
 
@@ -285,7 +286,7 @@ export default function SearchListings() {
             onChange={setFromText}
             onSelect={(coords) => {
               setFromCoords(coords);
-              setError(null);
+              setError(false);
             }}
             onClear={() => setFromCoords(null)}
           />
@@ -296,7 +297,7 @@ export default function SearchListings() {
             onChange={setToText}
             onSelect={(coords) => {
               setToCoords(coords);
-              setError(null);
+              setError(false);
             }}
             onClear={() => setToCoords(null)}
           />

@@ -189,26 +189,18 @@ export default function ConnectPage() {
   }
 
   // ===== SUBMIT =====
+  const API = process.env.NEXT_PUBLIC_API_URL as string;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    
     if (submitting) return;
-    
-    if (!validateForm()) {
-      setError("Please fill in all required fields");
-      return;
-    }
-
     setSubmitting(true);
-    setError(null);
-    setSuccess(null);
 
     try {
       // Geocode addresses
       const fromCoords = await geocodeAddress(form.from);
       const toCoords = await geocodeAddress(form.to);
 
-      // Prepare submission data
       const submissionData = {
         id: Date.now().toString(),
         name: form.name,
@@ -234,22 +226,33 @@ export default function ConnectPage() {
         to_lng: toCoords?.lng || ""
       };
 
-      // Submit to Google Apps Script API
-      console.log("Submitting data:", submissionData);
-      await fetch(process.env.NEXT_PUBLIC_API_URL as string, {
+      // duplicate check
+      const existingRes = await fetch(API);
+      const existing = await existingRes.json();
+
+      const already = existing.some((r: any) =>
+        r.phone === submissionData.phone &&
+        r.from === submissionData.from &&
+        r.to === submissionData.to &&
+        r.morning_time === submissionData.morning_time
+      );
+
+      if (already) {
+        alert("You already submitted this route");
+        setSubmitting(false);
+        return;
+      }
+
+      await fetch(API, {
         method: "POST",
-        body: JSON.stringify(submissionData),
+        body: JSON.stringify(submissionData)
       });
 
-      // Show success alert
-      alert("Details submitted successfully!");
-
-      // Reset submitting state
+      alert("Submitted successfully");
       setSubmitting(false);
 
       // Handle success based on route
       if (partnerId) {
-        // Redirect to WhatsApp for partner connection
         setTimeout(() => {
           const whatsappMessage = encodeURIComponent(
             `Hi LinQ 👋\n\nI want to connect with Partner ID: ${partnerId}\n\nMy details submitted on website.`
@@ -257,16 +260,15 @@ export default function ConnectPage() {
           window.location.href = `https://wa.me/9494823941?text=${whatsappMessage}`;
         }, 2000);
       } else {
-        // Redirect to search for /connect/new
         setTimeout(() => {
           window.location.href = "/#search";
         }, 1000);
       }
 
     } catch (err) {
-      console.error("Submission error:", err);
-      setError("Failed to submit details. Please try again.");
+      console.error(err);
       setSubmitting(false);
+      alert("Submission failed");
     }
   }
 
