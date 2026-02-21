@@ -49,20 +49,20 @@ export default function SearchListings() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // ===== LOAD DATA FROM GOOGLE APPS SCRIPT =====
   useEffect(() => {
-    async function fetchListings() {
-      try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL as string);
-        const data = await res.json();
-        setAllListings(data);
-      } catch (err) {
-        console.error("Failed loading listings:", err);
-      }
+  async function loadListings() {
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL as string);
+      const data = await res.json();
+      setAllListings(data);
+    } catch (err) {
+      console.error("Failed loading listings", err);
+      setError("Failed to load listings");
     }
+  }
 
-    fetchListings();
-  }, []);
+  loadListings();
+}, []);
 
   // ===== DISTANCE CALC =====
   function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
