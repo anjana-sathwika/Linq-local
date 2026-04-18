@@ -20,6 +20,7 @@ interface FormData {
   message_to_partner: string;
   travel_frequency: string;
   travel_days: string[];
+  college_office: string;
 }
 
 export default function ConnectPage() {
@@ -45,6 +46,7 @@ export default function ConnectPage() {
     message_to_partner: "",
     travel_frequency: "",
     travel_days: [],
+    college_office: "",
   });
 
   const [errors, setErrors] = useState<Partial<FormData>>({});
@@ -218,6 +220,7 @@ export default function ConnectPage() {
         message: form.message_to_partner,
         travel_frequency: form.travel_frequency,
         travel_days: form.travel_days.join(","),
+        college_office: form.college_office,
         status: "active",
         created_at: new Date().toISOString(),
         from_lat: fromCoords?.lat || "",
@@ -659,6 +662,21 @@ export default function ConnectPage() {
                 </div>
               </div>
             )}
+
+            {/* College/Office */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                College/Office Name (optional)
+              </label>
+              <input
+                type="text"
+                name="college_office"
+                value={form.college_office}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#2F5EEA] focus:border-transparent"
+                placeholder="Enter your college or office name"
+              />
+            </div>
 
             {/* Message */}
             <div>

@@ -28,6 +28,7 @@ interface Listing {
   evening_time?: string;
   message?: string;
   travel_days?: string;
+  college_office?: string;
   score?: number;
   matchType?: string;
 }
@@ -38,6 +39,8 @@ export default function SearchListings() {
   const [fromText, setFromText] = useState("");
   const [toText, setToText] = useState("");
   const [searchTravelDays, setSearchTravelDays] = useState<string[]>([]);
+  const [collegeOfficeText, setCollegeOfficeText] = useState("");
+  const [wantCollegeMatch, setWantCollegeMatch] = useState(false);
 
   const [allListings, setAllListings] = useState<Listing[]>([]);
   const [results, setResults] = useState<Listing[]>([]);
@@ -157,7 +160,18 @@ export default function SearchListings() {
       }
     }
 
-    // 🥉 3. Same travel days
+    // 🥉 3. College/Office match (high priority)
+    if (wantCollegeMatch && collegeOfficeText && profile.college_office) {
+      const searchLower = collegeOfficeText.toLowerCase().trim();
+      const profileLower = profile.college_office.toLowerCase().trim();
+      
+      if (profileLower.includes(searchLower) || searchLower.includes(profileLower)) {
+        score += 50;
+        matchType = "🏢 Same college/office";
+      }
+    }
+
+    // 🥉 4. Same travel days
     if (searchTravelDays.length > 0 && profile.travel_days) {
       const profileDays = profile.travel_days.split(",").map(d => d.trim());
       const sameDays = searchTravelDays.filter(day => profileDays.includes(day));
@@ -219,16 +233,16 @@ export default function SearchListings() {
   // Real-time search trigger
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (fromText || toText) {
+      if (fromText || toText || (wantCollegeMatch && collegeOfficeText)) {
         performSearch();
-      } else if (!fromText && !toText) {
-        // Show all listings when both inputs are empty
+      } else if (!fromText && !toText && !wantCollegeMatch) {
+        // Show all listings when search inputs are empty
         setResults(allListings);
       }
     }, 300); // Debounce search
 
     return () => clearTimeout(timer);
-  }, [fromText, toText, fromCoords, toCoords, allListings]);
+  }, [fromText, toText, fromCoords, toCoords, collegeOfficeText, wantCollegeMatch, allListings]);
 
   return (
     <section
@@ -316,6 +330,48 @@ export default function SearchListings() {
           </button>
         </div>
         
+        {/* College/Office Filter */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            👉 Do you want to connect with people from your college/office?
+          </label>
+          <div className="flex gap-4 mb-3">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="collegeMatch"
+                checked={wantCollegeMatch}
+                onChange={() => setWantCollegeMatch(true)}
+                className="mr-2"
+              />
+              Yes
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="collegeMatch"
+                checked={!wantCollegeMatch}
+                onChange={() => {
+                  setWantCollegeMatch(false);
+                  setCollegeOfficeText("");
+                }}
+                className="mr-2"
+              />
+              No
+            </label>
+          </div>
+          
+          {wantCollegeMatch && (
+            <input
+              type="text"
+              value={collegeOfficeText}
+              onChange={(e) => setCollegeOfficeText(e.target.value)}
+              placeholder="Enter your college/office name"
+              className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#2F5EEA]"
+            />
+          )}
+        </div>
+
         {/* Travel Days Filter */}
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -427,6 +483,13 @@ export default function SearchListings() {
                             {person.morning_time && `🌅 ${person.morning_time}`}
                             {person.evening_connect === "Yes" && person.evening_time && ` 🌆 ${person.evening_time}`}
                           </div>
+                          
+                          {/* College/Office */}
+                          {person.college_office && (
+                            <div className="text-xs text-gray-600 mb-1">
+                              {person.college_office}
+                            </div>
+                          )}
                           
                           {/* Travel Days */}
                           {person.travel_days && (
