@@ -31,20 +31,20 @@ function CountUp({ end, start }: { end: number; start: boolean }) {
 
 const cards = [
   {
-    title: "Precision Route Matching",
-    desc: "Match with commuters who travel your exact route and schedule.",
+    title: "Smart Route Overlap",
+    desc: "No exact same pickup needed. We match overlapping routes automatically.",
   },
   {
-    title: "Transparent Cost Sharing",
-    desc: "Fair distance-based splits with zero surge pricing.",
+    title: "Fair Cost Splitting",
+    desc: "Share fuel costs fairly based on distance. No surge pricing.",
   },
   {
-    title: "Verified Community",
-    desc: "Profiles, trust scores, and reviews ensure safe rides.",
+    title: "Verified Commuters",
+    desc: "All users verified with ratings and reviews for safe daily travel.",
   },
   {
-    title: "Eco-Conscious Travel",
-    desc: "Reduce congestion and emissions every commute.",
+    title: "Daily Savings",
+    desc: "Save 40-60% on commute costs while reducing traffic.",
   },
 ];
 
@@ -89,13 +89,13 @@ export default function WhyLinq() {
 
         {/* HEADING */}
         <h2 className="text-2xl sm:text-3xl md:text-5xl font-semibold mb-3 leading-tight px-2 text-black">
-          Smarter Commutes.
-          <span className="text-[#2F5EEA] block sm:inline"> {" "} Built on Community.</span>
+          Link Your Commute.
+          <span className="text-[#2F5EEA] block sm:inline"> {" "}Split Your Costs.</span>
         </h2>
 
         <p className="text-gray-600 max-w-xl mx-auto mb-10 md:mb-14 text-sm md:text-base px-4">
-          LinQ connects commuters on the same routes to share rides,
-          reduce costs and travel responsibly.
+          LinQ finds people traveling on overlapping daily routes.
+          No exact same pickup needed. Just smart matching for shared savings.
         </p>
 
         {/* ===== STATS ROW (MOBILE FIXED) ===== */}

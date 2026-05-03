@@ -11,8 +11,8 @@ export default function Hero() {
   const [index, setIndex] = useState(0);
 
   const texts = [
-    "Turning Empty Seats Into Shared Journeys.",
-    "ఖాళీ సీట్లను ప్రయాణాలుగా మార్చే చిన్న ప్రయత్నం..",
+    "Link your commute, split your costs.",
+    "Smart route matching for daily travelers.",
   ];
 
   /* COUNT ANIMATION */
@@ -76,7 +76,7 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center max-w-4xl">
 
         <p className="text-xs sm:text-sm font-semibold tracking-wide text-[#2F5EEA] uppercase mb-5 sm:mb-6">
-          Telangana’s No.1 Ride Sharing Community
+          Smart Commute Matching Platform
         </p>
 
         {/* TEXT SWITCH */}
@@ -95,7 +95,7 @@ export default function Hero() {
             {count.toLocaleString()}+
           </div>
           <p className="text-gray-600 text-sm sm:text-base md:text-lg mt-2 sm:mt-3">
-            people already riding smarter across Telangana
+            commuters saving money daily across Telangana
           </p>
         </div>
 
@@ -103,13 +103,13 @@ export default function Hero() {
         <div className="mt-4 sm:mt-6">
           <a href="#search">
             <button className="bg-[#2F5EEA] text-white font-semibold px-7 sm:px-10 py-3 sm:py-4 rounded-full hover:bg-[#1E3FAE] transition text-base sm:text-lg shadow-md hover:shadow-lg">
-              Find a Ride partner
+              Find Your Commute Match
             </button>
           </a>
         </div>
 
         <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-500">
-          It's Free 😉 • Verified users • No commission
+          Smart Matching • Verified Users • Fair Costs
         </p>
       </div>
     </section>

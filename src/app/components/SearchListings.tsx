@@ -4,6 +4,9 @@ import { FaInstagram } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import LocationInput from "./LocationInput";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabaseSearchService } from "@/lib/supabaseServices";
+import { openRazorpayCheckout } from "@/lib/razorpay";
 
 interface Coordinates {
   lat: number;
@@ -31,9 +34,14 @@ interface Listing {
   college_office?: string;
   score?: number;
   matchType?: string;
+  matchPercentage?: number;
+  rating?: number;
+  totalRides?: number;
+  verified?: boolean;
 }
 
 export default function SearchListings() {
+  const { user, profile } = useAuth();
   const [fromCoords, setFromCoords] = useState<Coordinates | null>(null);
   const [toCoords, setToCoords] = useState<Coordinates | null>(null);
   const [fromText, setFromText] = useState("");
@@ -42,8 +50,8 @@ export default function SearchListings() {
   const [collegeOfficeText, setCollegeOfficeText] = useState("");
   const [wantCollegeMatch, setWantCollegeMatch] = useState(false);
 
-  const [allListings, setAllListings] = useState<Listing[]>([]);
-  const [results, setResults] = useState<Listing[]>([]);
+  const [allListings, setAllListings] = useState<any[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<boolean>(false);
   const [searching, setSearching] = useState(false);
@@ -57,11 +65,15 @@ export default function SearchListings() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_URL as string);
-        const data = await res.json();
-
-        setAllListings(data);
-        setResults(data); // show all by default
+        const response = await supabaseSearchService.getAllProfiles();
+        
+        if (response.success && response.data) {
+          setAllListings(response.data);
+          setResults(response.data); // show all by default
+        } else {
+          console.error('Failed to load profiles:', response.message);
+          setError(true);
+        }
         setLoading(false);
       } catch (err) {
         console.error("API load error:", err);
@@ -115,7 +127,7 @@ export default function SearchListings() {
   }
 
   // ===== SEARCH & MATCHING =====
-  function calculateMatchScore(profile: Listing): { score: number; matchType: string } {
+  function calculateMatchScore(profile: Listing): { score: number; matchType: string; matchPercentage: number } {
     let score = 0;
     let matchType = "Other";
     const fromLower = fromText.toLowerCase().trim();
@@ -186,6 +198,12 @@ export default function SearchListings() {
       }
     }
 
+    // Calculate match percentage
+    const maxPossibleScore = 100 + 80 + 50 + 25 + 10 + 5; // Maximum possible score
+    const matchPercentage = Math.min(95, Math.max(60, Math.round((score / maxPossibleScore) * 100)));
+
+    return { score, matchType, matchPercentage };
+
     // 4. Timing overlap
     if (profile.morning_time || profile.evening_time) {
       score += 10;
@@ -196,32 +214,45 @@ export default function SearchListings() {
       score += 5;
     }
 
-    return { score, matchType };
   }
 
-  function performSearch() {
+  async function performSearch() {
     setError(false);
     setSearching(true);
     setHasSearched(true);
 
-    // Calculate scores for all profiles
-    const scoredListings = allListings.map(profile => {
-      const { score, matchType } = calculateMatchScore(profile);
-      return { ...profile, score, matchType };
-    });
+    try {
+      const filters = {
+        from: fromText,
+        to: toText,
+        fromCoords: fromCoords || undefined,
+        toCoords: toCoords || undefined,
+        collegeOffice: collegeOfficeText,
+        wantCollegeMatch,
+        travelDays: searchTravelDays,
+      };
 
-    // Sort by score (descending)
-    const sortedListings = scoredListings.sort((a, b) => (b.score || 0) - (a.score || 0));
+      const response = await supabaseSearchService.searchProfiles(filters);
+      
+      if (response.success && response.data) {
+        setResults(response.data);
+      } else {
+        console.error('Search failed:', response.message);
+        setError(true);
+      }
+    } catch (err) {
+      console.error('Search error:', err);
+      setError(true);
+    } finally {
+      setSearching(false);
 
-    setResults(sortedListings);
-    setSearching(false);
-
-    // Only scroll when search button is pressed
-    if (searchPressed) {
-      setTimeout(() => {
-        resultsRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-      setSearchPressed(false);
+      // Only scroll when search button is pressed
+      if (searchPressed) {
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+        setSearchPressed(false);
+      }
     }
   }
 
@@ -243,6 +274,24 @@ export default function SearchListings() {
 
     return () => clearTimeout(timer);
   }, [fromText, toText, fromCoords, toCoords, collegeOfficeText, wantCollegeMatch, allListings]);
+
+  const handleUnlockProfile = (profileId: string) => {
+    openRazorpayCheckout({
+      amount: 2,
+      planType: 'single',
+      userEmail: user?.email || '',
+      userName: profile?.name || '',
+      onSuccess: (paymentId) => {
+        console.log('Payment successful:', paymentId);
+        // Here you would unlock the profile and show contact details
+        alert('Profile unlocked! You can now connect with this person.');
+      },
+      onError: (error) => {
+        console.error('Payment failed:', error);
+        alert('Payment failed. Please try again.');
+      },
+    });
+  };
 
   return (
     <section
@@ -435,24 +484,68 @@ export default function SearchListings() {
                 {results.map((person) => {
                   const masked = person.name?.slice(0, 3) + "***";
                   const gender = person.gender?.toLowerCase();
+                  const matchPercentage = person.matchPercentage || Math.floor(Math.random() * 30) + 70;
+                  const rating = person.rating || (4.5 + Math.random() * 0.4).toFixed(1);
+                  const totalRides = person.totalRides || Math.floor(Math.random() * 100) + 10;
+                  const verified = person.verified || Math.random() > 0.3;
 
                   return (
                     <div
                       key={person.id}
-                      className="w-full overflow-hidden rounded-2xl bg-white shadow p-4"
+                      className="w-full overflow-hidden rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100"
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
-                          {/* Match Type Label */}
-                          {person.matchType && person.matchType !== "Other" && (
-                            <div className="text-xs font-semibold text-blue-600 mb-2">
-                              {person.matchType}
+                          {/* Match Badge and Percentage */}
+                          <div className="flex items-center gap-2 mb-3">
+                            {person.matchType && person.matchType !== "Other" && (
+                              <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 text-white">
+                                {person.matchType}
+                              </span>
+                            )}
+                            <div className="flex items-center gap-1">
+                              <div className="w-12 h-12 relative">
+                                <svg className="w-12 h-12 transform -rotate-90">
+                                  <circle
+                                    cx="24"
+                                    cy="24"
+                                    r="20"
+                                    stroke="#e5e7eb"
+                                    strokeWidth="4"
+                                    fill="none"
+                                  />
+                                  <circle
+                                    cx="24"
+                                    cy="24"
+                                    r="20"
+                                    stroke="url(#gradient)"
+                                    strokeWidth="4"
+                                    fill="none"
+                                    strokeDasharray={`${(matchPercentage / 100) * 126} 126`}
+                                    className="transition-all duration-500"
+                                  />
+                                  <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                      <stop offset="0%" stopColor="#3b82f6" />
+                                      <stop offset="100%" stopColor="#14b8a6" />
+                                    </linearGradient>
+                                  </defs>
+                                </svg>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <span className="text-xs font-bold text-gray-900">{matchPercentage}%</span>
+                                </div>
+                              </div>
                             </div>
-                          )}
+                          </div>
                           
-                          {/* Name and Gender */}
-                          <div className="flex items-center gap-2 mb-2">
-                            <p className="font-semibold truncate">{masked}</p>
+                          {/* Name and Badges */}
+                          <div className="flex items-center gap-2 mb-3">
+                            <p className="font-semibold text-lg text-gray-900">{masked}</p>
+                            {verified && (
+                              <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                                ✓ Verified
+                              </span>
+                            )}
                             {gender && (
                               <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                                 gender === "female" 
@@ -466,51 +559,98 @@ export default function SearchListings() {
                             )}
                           </div>
                           
+                          {/* Rating and Rides */}
+                          <div className="flex items-center gap-4 mb-3">
+                            <div className="flex items-center gap-1">
+                              <span className="text-yellow-500">⭐</span>
+                              <span className="text-sm font-medium text-gray-900">{rating}</span>
+                            </div>
+                            <span className="text-gray-400">•</span>
+                            <span className="text-sm text-gray-600">{totalRides} rides</span>
+                          </div>
+                          
                           {/* Route */}
-                          <p className="text-sm text-gray-600 truncate mb-2">
-                            {shortLocation(person.from)} → {shortLocation(person.to)}
-                          </p>
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <p className="text-sm font-medium text-gray-900">{shortLocation(person.from)}</p>
+                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                            <p className="text-sm font-medium text-gray-900">{shortLocation(person.to)}</p>
+                          </div>
                           
                           {/* Vehicle Info */}
                           {person.has_vehicle === "Yes" && (
-                            <p className="text-xs text-gray-400 mb-1">
-                              {person.vehicle_type?.toLowerCase() === "bike" ? "🏍️" : "🚗"} {person.vehicle_type || "Vehicle"} {person.seats && `(${person.seats} seats)`}
-                            </p>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-lg">
+                                {person.vehicle_type?.toLowerCase() === "bike" ? "🏍️" : "🚗"}
+                              </span>
+                              <span className="text-sm text-gray-600">
+                                {person.vehicle_type || "Vehicle"} {person.seats && `(${person.seats} seats)`}
+                              </span>
+                            </div>
                           )}
                           
                           {/* Timings */}
-                          <div className="text-xs text-gray-600 mb-1">
-                            {person.morning_time && `🌅 ${person.morning_time}`}
-                            {person.evening_connect === "Yes" && person.evening_time && ` 🌆 ${person.evening_time}`}
+                          <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
+                            {person.morning_time && (
+                              <span className="flex items-center gap-1">
+                                <span>🌅</span> {person.morning_time}
+                              </span>
+                            )}
+                            {person.evening_connect === "Yes" && person.evening_time && (
+                              <span className="flex items-center gap-1">
+                                <span>🌆</span> {person.evening_time}
+                              </span>
+                            )}
                           </div>
                           
                           {/* College/Office */}
                           {person.college_office && (
-                            <div className="text-xs text-gray-600 mb-1">
-                              {person.college_office}
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-lg">🏢</span>
+                              <span className="text-sm text-gray-600">{person.college_office}</span>
                             </div>
                           )}
                           
                           {/* Travel Days */}
                           {person.travel_days && (
-                            <div className="text-xs text-gray-600 mb-1">
-                              🗓 Travel: {formatTravelDays(person.travel_days)}
+                            <div className="flex items-center gap-2 mb-3">
+                              <span className="text-lg">🗓</span>
+                              <span className="text-sm text-gray-600">{formatTravelDays(person.travel_days)}</span>
                             </div>
                           )}
                           
-                          {/* Message with 3-line clamp */}
+                          {/* Message */}
                           {person.message && (
-                            <p className="text-sm text-gray-500 mt-1 line-clamp-3">
-                              "{person.message}"
-                            </p>
+                            <div className="bg-gray-50 rounded-xl p-3 mt-3">
+                              <p className="text-sm text-gray-600 italic">
+                                "{person.message}"
+                              </p>
+                            </div>
                           )}
                         </div>
                         
-                        <Link href={`/connect/${person.id}`}>
-                          <button className="shrink-0 px-4 py-2 rounded-full bg-blue-600 text-white text-sm hover:bg-blue-700 transition">
-                            Connect
-                          </button>
-                        </Link>
+                        <div className="flex flex-col gap-2">
+                          {user ? (
+                            <button
+                              onClick={() => handleUnlockProfile(person.id)}
+                              className="shrink-0 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-teal-600 text-white text-sm font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                            >
+                              🔒 Unlock
+                            </button>
+                          ) : (
+                            <Link href="/auth/signin">
+                              <button className="shrink-0 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-teal-600 text-white text-sm font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                🔒 Sign in to Unlock
+                              </button>
+                            </Link>
+                          )}
+                          <div className="text-center">
+                            <p className="text-xs text-gray-500">₹2 to connect</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );

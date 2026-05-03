@@ -1,22 +1,34 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavbarProps {
   refs: {
     home: React.RefObject<HTMLDivElement | null>;
     features: React.RefObject<HTMLDivElement | null>;
-    career: React.RefObject<HTMLDivElement | null>;
     footer: React.RefObject<HTMLDivElement | null>;
   };
 }
 
 export default function Navbar({ refs }: NavbarProps) {
+  const { user, signOut } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Sign out error:', error);
+      setSigningOut(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -67,21 +79,41 @@ export default function Navbar({ refs }: NavbarProps) {
             Features
           </li>
 
-          <li
-            className="hover:text-[#2F5EEA] cursor-pointer transition"
-            onClick={() => scrollToSection(refs.career)}
-          >
-            Careers
-          </li>
         </ul>
 
         {/* CTA — normal size */}
-        <div className="hidden md:flex items-center">
-          <Link href="/#search">
-            <button className="bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition text-sm">
-              Find a Ride
-            </button>
-          </Link>
+        <div className="hidden md:flex items-center gap-4">
+          {user ? (
+            <>
+              <Link href="/profile">
+                <button className="flex items-center gap-2 text-gray-700 hover:text-[#2F5EEA] transition">
+                  <User className="w-4 h-4" />
+                  <span className="text-sm font-medium">Profile</span>
+                </button>
+              </Link>
+              <button
+                onClick={handleSignOut}
+                disabled={signingOut}
+                className="flex items-center gap-2 text-gray-700 hover:text-[#2F5EEA] transition disabled:opacity-50"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-sm font-medium">{signingOut ? 'Signing out...' : 'Sign Out'}</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/signin">
+                <button className="text-gray-700 hover:text-[#2F5EEA] transition text-sm font-medium">
+                  Sign In
+                </button>
+              </Link>
+              <Link href="/#search">
+                <button className="bg-[#2F5EEA] text-white font-semibold px-6 py-2 rounded-full hover:bg-[#1E3FAE] transition text-sm">
+                  Find Match
+                </button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* MOBILE MENU BUTTON */}
@@ -108,13 +140,39 @@ export default function Navbar({ refs }: NavbarProps) {
         <ul className="flex flex-col items-center gap-5 font-medium text-gray-700 text-base">
           <li onClick={() => scrollToSection(refs.home)}>Home</li>
           <li onClick={() => scrollToSection(refs.features)}>Features</li>
-          <li onClick={() => scrollToSection(refs.career)}>Careers</li>
 
-          <Link href="/#search" onClick={() => setMenuOpen(false)}>
-            <button className="bg-[#2F5EEA] text-white px-6 py-2 rounded-full text-sm">
-              Find a Ride
-            </button>
-          </Link>
+          {user ? (
+            <>
+              <Link href="/profile" onClick={() => setMenuOpen(false)}>
+                <button className="text-gray-700 hover:text-[#2F5EEA] transition text-sm">
+                  Profile
+                </button>
+              </Link>
+              <button
+                onClick={() => {
+                  handleSignOut();
+                  setMenuOpen(false);
+                }}
+                disabled={signingOut}
+                className="text-gray-700 hover:text-[#2F5EEA] transition text-sm disabled:opacity-50"
+              >
+                {signingOut ? 'Signing out...' : 'Sign Out'}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/signin" onClick={() => setMenuOpen(false)}>
+                <button className="text-gray-700 hover:text-[#2F5EEA] transition text-sm mb-2">
+                  Sign In
+                </button>
+              </Link>
+              <Link href="/#search" onClick={() => setMenuOpen(false)}>
+                <button className="bg-[#2F5EEA] text-white px-6 py-2 rounded-full text-sm">
+                  Find Match
+                </button>
+              </Link>
+            </>
+          )}
         </ul>
       </div>
     </nav>
